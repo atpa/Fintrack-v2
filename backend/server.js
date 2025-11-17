@@ -23,14 +23,11 @@ const crypto = require("crypto");
 // Keeping original implementation for stability
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { ENV } = require("./config/constants");
 
 const dataPath = path.join(__dirname, "data.json");
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change";
-if (JWT_SECRET === "dev-secret-change" && process.env.NODE_ENV === "production") {
-  console.error("SECURITY WARNING: Using default JWT_SECRET in production! Set JWT_SECRET environment variable.");
-  process.exit(1);
-}
+const JWT_SECRET = ENV.JWT_SECRET;
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
 const COOKIE_SECURE = process.env.COOKIE_SECURE === "true";
