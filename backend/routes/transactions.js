@@ -16,7 +16,7 @@ const {
   getBudgetByUserCategoryMonth,
   createBudget,
   updateBudget
-} = require('../services/dataService.new');
+} = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
 const { convertAmount } = require('../services/currencyService');
 
