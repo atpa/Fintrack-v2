@@ -1,44 +1,61 @@
 <!DOCTYPE html>
-  <header>
-    <div class="brand visually-hidden">
-      <a href="dashboard.html">FinTrackr</a>
-    </div>
-    <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
-
-  </header>
-
-  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Боковая навигация">
-    <div class="sidebar-header">
-      <a href="dashboard.html" class="logo" aria-label="FinTrackr — на главную">
-        <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-          <rect width="24" height="24" rx="6" fill="var(--primary)"></rect>
-          <path d="M6 12h12M6 8h12M6 16h12" stroke="#fff" stroke-width="1.2" stroke-linecap="round"></path>
-        </svg>
-        <span class="logo-text">FinTrackr</span>
-      </a>
-      
-    </div>
-
-    <nav class="sidebar-nav" aria-label="Меню приложения">
-      <div class="nav-section">
-        <h3 class="nav-section-title">Основное</h3>
-        <ul class="nav-list">
-          <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a></li>
-          <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">💼</span><span class="nav-label">Счёта</span></a></li>
-          <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Операции</span></a></li>
-          <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">🔖</span><span class="nav-label">Категории</span></a></li>
-        </ul>
-      </div>
-
-      <div class="nav-section">
-        <h3 class="nav-section-title">Планирование</h3>
-        <ul class="nav-list">
-          <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a></li>
-          <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a></li>
-          <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">📅</span><span class="nav-label">Планируемые</span></a></li>
-          <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Регулярные</span></a></li>
-        </ul>
-      </div>
+  <!DOCTYPE html>
+  <html lang="ru">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>FinTrackr – О продукте</title>
+      <link rel="stylesheet" href="css/design-system.css" />
+      <link rel="stylesheet" href="css/style.css" />
+      <script defer src="js/landing.js"></script>
+    </head>
+    <body class="landing-page">
+      <header>
+        <div class="header-inner">
+          <h1><a href="landing.html">FinTrackr</a></h1>
+          <nav class="landing-nav" aria-label="Основная навигация">
+            <ul>
+              <li><a href="landing.html">Главная</a></li>
+              <li><a href="features.html">Возможности</a></li>
+              <li><a href="benefits.html">Польза</a></li>
+              <li><a href="about.html" aria-current="page">О продукте</a></li>
+            </ul>
+          </nav>
+          <div class="auth-links">
+            <a href="login.html" class="login-link">Вход</a>
+            <a href="register.html" class="register-link">Регистрация</a>
+          </div>
+          <button class="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+      </header>
+      <main>
+        <section class="hero" aria-labelledby="aboutTitle">
+          <h2 id="aboutTitle">Что такое FinTrackr?</h2>
+          <p>
+            FinTrackr — современное приложение для управления личными финансами: единый обзор счетов,
+            анализ расходов, бюджеты, цели и интеллектуальные прогнозы.
+          </p>
+        </section>
+        <section class="features" aria-label="Ключевые преимущества">
+          <div class="feature">
+            <h3>Полный контроль</h3>
+            <p>Все счета, доходы и расходы — в одном месте. Поддержка валют и синхронизация.</p>
+          </div>
+          <div class="feature">
+            <h3>Интеллектуальный анализ</h3>
+            <p>Алгоритмы выявляют паттерны трат и помогают оптимизировать бюджет.</p>
+          </div>
+          <div class="feature">
+            <h3>Финансовое развитие</h3>
+            <p>Обучающие материалы и метрики здоровья бюджета повышают финансовую грамотность.</p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <p>&copy; 2025 FinTrackr. Все права защищены.</p>
+      </footer>
+    </body>
+  </html>
 
       <div class="nav-section">
         <h3 class="nav-section-title">Аналитика</h3>

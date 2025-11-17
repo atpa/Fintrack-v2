@@ -1,9 +1,10 @@
 /**
  * Утилита пагинации для FinTrackr
  * Используется в accounts.js, categories.js, transactions.js
+ * @module pagination
  */
 
-class Pagination {
+export default class Pagination {
   /**
    * @param {Object} options - Конфигурация
    * @param {number} options.currentPage - Текущая страница (по умолчанию 1)
