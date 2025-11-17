@@ -1,6 +1,8 @@
 import fetchData from '../modules/api.js';
 import initNavigation from '../modules/navigation.js';
 import initProfileShell from '../modules/profile.js';
+import { showLoading, showError, showToast } from '../modules/ui-components.js';
+import { formatCurrency, formatDate, handleApiError } from '../modules/utils.js';
 
 initNavigation();
 initProfileShell();
@@ -56,12 +58,40 @@ function appendTransactionRow(tx, accounts, categories, tbody, prepend = false) 
 async function initTransactionsPage() {
   const tbody = document.querySelector('#transactionsTable tbody');
   if (!tbody) return;
-  const [transactions, accounts, categories, rules] = await Promise.all([
-    fetchData('/api/transactions'),
-    fetchData('/api/accounts'),
-    fetchData('/api/categories'),
-    fetchData('/api/rules')
-  ]);
+  
+  const tableContainer = tbody.closest('table').parentElement;
+  
+  // Show loading state
+  showLoading(tableContainer, 'Загрузка транзакций...');
+  
+  try {
+    const [transactions, accounts, categories, rules] = await Promise.all([
+      fetchData('/api/transactions'),
+      fetchData('/api/accounts'),
+      fetchData('/api/categories'),
+      fetchData('/api/rules')
+    ]);
+    
+    // Hide loading
+    tableContainer.innerHTML = '';
+    const table = document.createElement('table');
+    table.id = 'transactionsTable';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Счёт</th>
+          <th>Категория</th>
+          <th>Тип</th>
+          <th>Сумма</th>
+          <th>Примечание</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+    tableContainer.appendChild(table);
+    const newTbody = table.querySelector('tbody');
   // Сохраняем правила в глобальную переменную для автокатегоризации
   window.autoRules = Array.isArray(rules) ? rules : [];
   // Сохраняем полный список операций для фильтрации
