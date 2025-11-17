@@ -15,7 +15,7 @@
     "lint": "eslint backend --ext .js",
     "db:migrate": "node backend/database/init.js",
     "db:init": "node backend/database/init.js",
-    "db:seed": "node backend/database/seed.js"
+    "db:seed": "node backend/scripts/seed.js"
   },
   "keywords": [
     "finance",
