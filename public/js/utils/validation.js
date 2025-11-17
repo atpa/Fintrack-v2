@@ -1,6 +1,7 @@
 /**
  * Утилиты валидации форм для FinTrackr
  * Используется в accounts.js, categories.js, transactions.js, settings.js
+ * @module validation
  */
 
 /**
@@ -8,7 +9,7 @@
  * @param {HTMLInputElement|HTMLSelectElement} input - Элемент формы
  * @param {string} message - Текст ошибки (пустая строка для очистки)
  */
-function setFieldError(input, message) {
+export function setFieldError(input, message) {
   if (!input) return;
   
   const field = input.closest('.form-field');
@@ -29,7 +30,7 @@ function setFieldError(input, message) {
  * Очистить все ошибки валидации в форме
  * @param {HTMLFormElement} form - Элемент формы
  */
-function clearAllFieldErrors(form) {
+export function clearAllFieldErrors(form) {
   if (!form) return;
   
   form.querySelectorAll('.has-error').forEach(input => {
@@ -47,7 +48,7 @@ function clearAllFieldErrors(form) {
  * @param {string} fieldName - Название поля для сообщения об ошибке
  * @returns {boolean} - true если валидно
  */
-function validateRequired(input, fieldName = 'Поле') {
+export function validateRequired(input, fieldName = 'Поле') {
   const value = input.value.trim();
   if (!value) {
     setFieldError(input, `${fieldName} обязательно для заполнения`);
@@ -62,7 +63,7 @@ function validateRequired(input, fieldName = 'Поле') {
  * @param {HTMLInputElement} input - Элемент поля email
  * @returns {boolean} - true если валидно
  */
-function validateEmail(input) {
+export function validateEmail(input) {
   const value = input.value.trim();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
@@ -89,7 +90,7 @@ function validateEmail(input) {
  * @param {string} [options.fieldName='Значение'] - Название поля
  * @returns {boolean} - true если валидно
  */
-function validateNumber(input, options = {}) {
+export function validateNumber(input, options = {}) {
   const { min, max, fieldName = 'Значение' } = options;
   const value = input.value.trim();
   

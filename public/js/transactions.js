@@ -1,3 +1,11 @@
+/**
+ * Transactions management module
+ * @module transactions
+ */
+import API from './utils/api.js';
+import { setFieldError, validateRequired, validateNumber } from './utils/validation.js';
+import Pagination from './utils/pagination.js';
+
 const transactionsState = {
   all: [],
   filtered: [],
@@ -14,10 +22,6 @@ const pagination = new Pagination({
     renderTransactionsCards();
   }
 });
-
-// Функция setFieldError заменена на утилиту validation.js
-
-// Функции пагинации заменены на утилиту Pagination (см. строки 8-17)
 
 function renderTransactions() {
   const listEl = document.getElementById('transactionsList');
@@ -334,10 +338,9 @@ async function handleDeleteTransaction(id) {
   });
   if (!confirmed) return;
   try {
-    const resp = await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
+    const resp = await API.transactions.remove(id);
     if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      UI.showToast({ type: 'danger', message: err.error || 'Не удалось удалить операцию' });
+      UI.showToast({ type: 'danger', message: resp.error || 'Не удалось удалить операцию' });
       return;
     }
     transactionsState.all = transactionsState.all.filter((item) => String(item.id) !== String(id));
@@ -638,12 +641,21 @@ async function initTransactionsPage() {
   const hasList = document.getElementById('transactionsList');
   const hasTable = document.querySelector('#transactionsTable tbody');
   if (!hasList && !hasTable) return;
-  const [transactions, accounts, categories, rules] = await Promise.all([
-    fetchData('/api/transactions'),
-    fetchData('/api/accounts'),
-    fetchData('/api/categories'),
-    fetchData('/api/rules'),
+  
+  if (hasTable) hasTable.innerHTML = '<tr><td colspan="6">Загрузка...</td></tr>';
+  
+  const [txResp, accResp, catResp, rulesResp] = await Promise.all([
+    API.transactions.list(),
+    API.accounts.list(),
+    API.categories.list(),
+    API.get('/api/rules'),
   ]);
+  
+  const transactions = (txResp.ok ? txResp.data : []) || [];
+  const accounts = (accResp.ok ? accResp.data : []) || [];
+  const categories = (catResp.ok ? catResp.data : []) || [];
+  const rules = (rulesResp.ok ? rulesResp.data : []) || [];
+  
   transactionsState.all = Array.isArray(transactions) ? transactions : [];
   transactionsState.accounts = Array.isArray(accounts) ? accounts : [];
   transactionsState.categories = Array.isArray(categories) ? categories : [];
@@ -670,6 +682,15 @@ async function initTransactionsPage() {
   bindAddForm();
   applyFilters();
 }
+
+// Auto-init on DOM ready
+if (document.readyState !== 'loading') {
+  initTransactionsPage();
+} else {
+  document.addEventListener('DOMContentLoaded', initTransactionsPage);
+}
+
+export { initTransactionsPage };
 
 if (document.readyState !== 'loading') {
   initTransactionsPage();
