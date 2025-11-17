@@ -464,6 +464,75 @@ function addTokenToBlacklist(token) {
   }
 }
 
+// ==================== SESSIONS ====================
+
+function getAllSessions() {
+  return getDB().prepare('SELECT * FROM sessions').all();
+}
+
+function getSessionById(sessionId) {
+  return getDB().prepare('SELECT * FROM sessions WHERE session_id = ?').get(sessionId);
+}
+
+function getSessionsByUserId(userId) {
+  return getDB().prepare('SELECT * FROM sessions WHERE user_id = ?').all(userId);
+}
+
+function createSession(session) {
+  const stmt = getDB().prepare(`
+    INSERT INTO sessions (session_id, user_id, device_name, device_type, ip_address, user_agent, location, created_at, last_activity, is_active, revoked_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(
+    session.session_id,
+    session.user_id,
+    session.device_name || null,
+    session.device_type || null,
+    session.ip_address || null,
+    session.user_agent || null,
+    session.location || null,
+    session.created_at,
+    session.last_activity,
+    session.is_active !== undefined ? session.is_active : 1,
+    session.revoked_at || null
+  );
+  return result.lastInsertRowid;
+}
+
+function updateSession(sessionId, updates) {
+  const fields = [];
+  const values = [];
+  
+  if (updates.last_activity !== undefined) {
+    fields.push('last_activity = ?');
+    values.push(updates.last_activity);
+  }
+  if (updates.is_active !== undefined) {
+    fields.push('is_active = ?');
+    values.push(updates.is_active);
+  }
+  if (updates.revoked_at !== undefined) {
+    fields.push('revoked_at = ?');
+    values.push(updates.revoked_at);
+  }
+  
+  if (fields.length === 0) return false;
+  
+  values.push(sessionId);
+  
+  const stmt = getDB().prepare(`
+    UPDATE sessions SET ${fields.join(', ')} WHERE session_id = ?
+  `);
+  const result = stmt.run(...values);
+  return result.changes > 0;
+}
+
+function deleteSession(sessionId) {
+  const stmt = getDB().prepare('DELETE FROM sessions WHERE session_id = ?');
+  const result = stmt.run(sessionId);
+  return result.changes > 0;
+}
+
 // ==================== LEGACY COMPATIBILITY ====================
 
 /**
@@ -567,6 +636,14 @@ module.exports = {
   // Token blacklist
   isTokenBlacklisted,
   addTokenToBlacklist,
+  
+  // Sessions
+  getAllSessions,
+  getSessionById,
+  getSessionsByUserId,
+  createSession,
+  updateSession,
+  deleteSession,
   
   // Legacy compatibility (deprecated)
   getData,
