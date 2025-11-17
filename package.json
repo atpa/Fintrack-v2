@@ -1,0 +1,55 @@
+{
+  "name": "fintrackr",
+  "version": "1.0.0",
+  "description": "Personal Finance Tracker - MVP web application",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "start:3000": "cross-env PORT=3000 node backend/server.js",
+    "start:8080": "cross-env PORT=8080 node backend/server.js",
+    "dev": "node backend/server.js",
+    "test": "npm run test:backend",
+    "test:backend": "cross-env FINTRACKR_DISABLE_PERSIST=true jest",
+    "test:e2e": "cross-env FINTRACKR_DISABLE_PERSIST=true playwright test",
+    "test:all": "npm run test:backend && npm run test:e2e",
+    "lint": "eslint backend --ext .js",
+    "db:migrate": "node backend/database/init.js",
+    "db:init": "node backend/database/init.js"
+  },
+  "keywords": [
+    "finance",
+    "tracker",
+    "budget",
+    "expenses",
+    "web-app",
+    "rest-api"
+  ],
+  "author": "FinTrackr Development Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/fintrackr.git"
+  },
+  "homepage": "https://your-username.github.io/fintrackr",
+  "bugs": {
+    "url": "https://github.com/your-username/fintrackr/issues"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.4.1",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1"
+  }
+}
