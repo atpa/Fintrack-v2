@@ -55,7 +55,7 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return next();
   }
-  return res.status(404).send('Not Found');
+  return res.status(404).sendFile(path.join(publicDir, '404.html'));
 });
 
 app.use(errorHandler);
