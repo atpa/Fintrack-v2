@@ -7,18 +7,34 @@ const jwt = require('jsonwebtoken');
 const { ENV } = require('../config/constants');
 const { parseCookies } = require('../services/authService');
 const { isTokenBlacklisted } = require('../services/dataService');
+const { AuthenticationError } = require('./errorHandler');
 
 /**
  * Authenticate request using JWT from cookies
  * Attaches user info to req.user if valid
  */
 function authenticateRequest(req, res, next) {
+  const cookies = parseCookies(req);
+  const accessToken = cookies.access_token;
+
+  if (!accessToken) {
+    return next(new AuthenticationError('Authentication required'));
+  }
+
+  if (isTokenBlacklisted(accessToken)) {
+    return next(new AuthenticationError('Token has been invalidated'));
+  }
+
   try {
-    const cookies = parseCookies(req);
-    const accessToken = cookies.access_token;
-    
-    if (!accessToken) {
-      return res.status(401).json({ error: 'Authentication required' });
+    const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
+    req.user = {
+      userId: payload.userId,
+      email: payload.email
+    };
+    return next();
+  } catch (jwtError) {
+    if (jwtError.name === 'TokenExpiredError') {
+      return next(new AuthenticationError('Token expired'));
     }
     
     // Check if token is blacklisted
@@ -26,24 +42,8 @@ function authenticateRequest(req, res, next) {
       return res.status(401).json({ error: 'Token has been invalidated' });
     }
     
-    // Verify token
-    try {
-      const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
-      const uid = payload.userId || payload.sub; // support legacy and new token shape
-      req.user = {
-        userId: uid,
-        email: payload.email
-      };
-      next();
-    } catch (jwtError) {
-      if (jwtError.name === 'TokenExpiredError') {
-        return res.status(401).json({ error: 'Token expired' });
-      }
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-  } catch (error) {
-    console.error('Authentication error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    // If not expired, treat as invalid token
+    return res.status(401).json({ error: 'Invalid token' });
   }
 }
 

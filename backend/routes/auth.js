@@ -31,13 +31,11 @@ router.post('/register', validationMiddleware(registerSchema), async (req, res) 
     // Check if user exists
     const existing = getUserByEmail(email);
     if (existing) {
-      return res.status(400).json({ error: 'Email already registered' });
+      return next(new ValidationError('Email already registered'));
     }
-    
-    // Hash password
+
     const passwordHash = await bcrypt.hash(password, 10);
-    
-    // Create user
+
     const userId = createUser(name, email, passwordHash);
     
     // Generate tokens
@@ -49,8 +47,7 @@ router.post('/register', validationMiddleware(registerSchema), async (req, res) 
       user: { id: userId, name, email }
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -65,13 +62,12 @@ router.post('/login', validationMiddleware(loginSchema), async (req, res) => {
     // Find user
     const user = getUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return next(new AuthenticationError('Invalid credentials'));
     }
-    
-    // Verify password
+
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return next(new AuthenticationError('Invalid credentials'));
     }
     
     // Generate tokens
@@ -83,8 +79,7 @@ router.post('/login', validationMiddleware(loginSchema), async (req, res) => {
       user: sanitizeUser(user)
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -92,17 +87,16 @@ router.post('/login', validationMiddleware(loginSchema), async (req, res) => {
  * POST /api/logout
  * Logout user and invalidate tokens
  */
-router.post('/logout', (req, res) => {
+router.post('/logout', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const accessToken = cookies.access_token;
     if (accessToken) addTokenToBlacklist(accessToken);
     clearAuthCookies(res);
-    
+
     res.json({ success: true });
   } catch (error) {
-    console.error('Logout error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -118,8 +112,7 @@ router.post('/refresh', (req, res) => {
     if (!accessToken) return res.status(401).json({ error: 'Not authenticated' });
     return res.json({ success: true });
   } catch (error) {
-    console.error('Refresh error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -127,36 +120,33 @@ router.post('/refresh', (req, res) => {
  * GET /api/session
  * Check if user is authenticated and return user data
  */
-router.get('/session', (req, res) => {
+router.get('/session', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const accessToken = cookies.access_token;
-    
+
     if (!accessToken) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return next(new AuthenticationError('Not authenticated'));
     }
-    
-    // Check if token is blacklisted
+
     if (isTokenBlacklisted(accessToken)) {
       clearAuthCookies(res);
-      return res.status(401).json({ error: 'Token invalidated' });
+      return next(new AuthenticationError('Token invalidated'));
     }
-    
-    // Verify token
+
     const jwt = require('jsonwebtoken');
     const { ENV } = require('../config/constants');
-    
+
     try {
       const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
       const user = require('../services/dataService').getUserById(payload.userId);
-      
+
       if (!user) {
-        return res.status(401).json({ error: 'User not found' });
+        return next(new AuthenticationError('User not found'));
       }
-      
-      res.json({ user: sanitizeUser(user) });
+
+      return res.json({ user: sanitizeUser(user) });
     } catch (jwtError) {
-      // Token expired or invalid - try to refresh
       const refreshToken = cookies.refresh_token;
       if (refreshToken) {
         const tokenRecord = getRefreshToken(refreshToken);
@@ -169,13 +159,12 @@ router.get('/session', (req, res) => {
           }
         }
       }
-      
+
       clearAuthCookies(res);
-      return res.status(401).json({ error: 'Token expired' });
+      return next(new AuthenticationError('Token expired'));
     }
   } catch (error) {
-    console.error('Session error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

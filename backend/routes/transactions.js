@@ -29,13 +29,8 @@ router.use(authenticateRequest);
  * Get all transactions for authenticated user
  */
 router.get('/', (req, res) => {
-  try {
-    const transactions = getTransactionsByUserId(req.user.userId);
-    res.json(transactions);
-  } catch (error) {
-    console.error('Get transactions error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  const transactions = getTransactionsByUserId(req.user.userId);
+  res.json(transactions);
 });
 
 /**
@@ -92,6 +87,50 @@ router.post('/', validationMiddleware(createTransactionSchema), (req, res) => {
     console.error('Create transaction error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+
+  if (!['income', 'expense'].includes(type)) {
+    return next(new ValidationError('Type must be income or expense', [
+      { field: 'type', message: 'Must be income or expense' },
+    ]));
+  }
+
+  const account = getAccountById(account_id);
+  if (!account || account.user_id !== req.user.userId) {
+    return next(new AuthorizationError('Invalid account'));
+  }
+
+  const transactionId = createTransaction(
+    req.user.userId,
+    account_id,
+    category_id || null,
+    type,
+    amount,
+    currency,
+    date,
+    note || null
+  );
+
+  const convertedAmount = convertAmount(amount, currency, account.currency);
+  const newBalance = type === 'income'
+    ? account.balance + convertedAmount
+    : account.balance - convertedAmount;
+
+  updateAccount(account_id, { balance: newBalance });
+
+  if (type === 'expense' && category_id) {
+    const month = date.substring(0, 7); // Extract YYYY-MM
+    let budget = getBudgetByUserCategoryMonth(req.user.userId, category_id, month);
+
+    if (!budget) {
+      createBudget(req.user.userId, category_id, month, 0, convertedAmount, 'fixed', null, currency);
+    } else {
+      const budgetAmount = convertAmount(amount, currency, budget.currency || 'USD');
+      updateBudget(budget.id, { spent: budget.spent + budgetAmount });
+    }
+  }
+
+  const transaction = getTransactionById(transactionId);
+  return res.status(201).json(transaction);
 });
 
 /**
@@ -138,6 +177,33 @@ router.delete('/:id', validationMiddleware(transactionIdParams), (req, res) => {
     console.error('Delete transaction error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+
+  if (transaction.user_id !== req.user.userId) {
+    return next(new AuthorizationError('Access denied'));
+  }
+
+  const account = getAccountById(transaction.account_id);
+  if (account) {
+    const convertedAmount = convertAmount(transaction.amount, transaction.currency, account.currency);
+    const newBalance = transaction.type === 'income'
+      ? account.balance - convertedAmount
+      : account.balance + convertedAmount;
+
+    updateAccount(account.id, { balance: newBalance });
+  }
+
+  if (transaction.type === 'expense' && transaction.category_id) {
+    const month = transaction.date.substring(0, 7);
+    const budget = getBudgetByUserCategoryMonth(req.user.userId, transaction.category_id, month);
+
+    if (budget) {
+      const budgetAmount = convertAmount(transaction.amount, transaction.currency, budget.currency || 'USD');
+      updateBudget(budget.id, { spent: Math.max(0, budget.spent - budgetAmount) });
+    }
+  }
+
+  deleteTransaction(req.params.id);
+  return res.json({ success: true });
 });
 
 module.exports = router;

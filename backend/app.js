@@ -41,7 +41,7 @@ app.use('/api', authRouter);
 
 // Fallback for unmatched API routes
 app.use('/api', (req, res, next) => {
-  next(new AppError(404, 'Not found'));
+  next(new AppError('Not found', 404));
 });
 
 // Static files
@@ -59,6 +59,7 @@ app.use((req, res, next) => {
   return res.status(404).sendFile(path.join(publicDir, '404.html'));
 });
 
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 module.exports = app;
