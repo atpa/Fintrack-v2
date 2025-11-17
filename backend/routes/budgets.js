@@ -13,87 +13,79 @@ const {
   deleteBudget
 } = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
+const { ValidationError, AuthorizationError, NotFoundError } = require('../middleware/errorHandler');
 
 router.use(authenticateRequest);
 
 router.get('/', (req, res) => {
-  try {
-    const budgets = getBudgetsByUserId(req.user.userId);
-    res.json(budgets);
-  } catch (error) {
-    console.error('Get budgets error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  const budgets = getBudgetsByUserId(req.user.userId);
+  res.json(budgets);
 });
 
-router.post('/', (req, res) => {
-  try {
-    const { category_id, month, limit_amount, type, percent, currency } = req.body;
-    
-    if (!category_id || !month) {
-      return res.status(400).json({ error: 'Category and month are required' });
-    }
-    
-    const budgetId = createBudget(
-      req.user.userId,
-      category_id,
-      month,
-      limit_amount || 0,
-      0,
-      type || 'fixed',
-      percent || null,
-      currency || 'USD'
-    );
-    
-    const budget = getBudgetById(budgetId);
-    res.status(201).json(budget);
-  } catch (error) {
-    console.error('Create budget error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+router.post('/', (req, res, next) => {
+  const { category_id, month, limit_amount, type, percent, currency } = req.body;
+
+  if (!category_id || !month) {
+    return next(new ValidationError('Category and month are required', [
+      { field: 'category_id', message: 'Category is required' },
+      { field: 'month', message: 'Month is required' },
+    ]));
   }
+
+  const budgetId = createBudget(
+    req.user.userId,
+    category_id,
+    month,
+    limit_amount || 0,
+    0,
+    type || 'fixed',
+    percent || null,
+    currency || 'USD'
+  );
+
+  const budget = getBudgetById(budgetId);
+  return res.status(201).json(budget);
 });
 
-router.put('/:id', (req, res) => {
-  try {
-    const budget = getBudgetById(req.params.id);
-    
-    if (!budget || budget.user_id !== req.user.userId) {
-      return res.status(404).json({ error: 'Budget not found' });
-    }
-    
-    const { limit_amount, spent, type, percent, currency } = req.body;
-    const updates = {};
-    
-    if (limit_amount !== undefined) updates.limit_amount = limit_amount;
-    if (spent !== undefined) updates.spent = spent;
-    if (type !== undefined) updates.type = type;
-    if (percent !== undefined) updates.percent = percent;
-    if (currency !== undefined) updates.currency = currency;
-    
-    updateBudget(req.params.id, updates);
-    const updated = getBudgetById(req.params.id);
-    
-    res.json(updated);
-  } catch (error) {
-    console.error('Update budget error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+router.put('/:id', (req, res, next) => {
+  const budget = getBudgetById(req.params.id);
+
+  if (!budget) {
+    return next(new NotFoundError('Budget not found'));
   }
+
+  if (budget.user_id !== req.user.userId) {
+    return next(new AuthorizationError('Access denied'));
+  }
+
+  const { limit_amount, spent, type, percent, currency } = req.body;
+  const updates = {};
+
+  if (limit_amount !== undefined) updates.limit_amount = limit_amount;
+  if (spent !== undefined) updates.spent = spent;
+  if (type !== undefined) updates.type = type;
+  if (percent !== undefined) updates.percent = percent;
+  if (currency !== undefined) updates.currency = currency;
+
+  updateBudget(req.params.id, updates);
+  const updated = getBudgetById(req.params.id);
+
+  return res.json(updated);
 });
 
-router.delete('/:id', (req, res) => {
-  try {
-    const budget = getBudgetById(req.params.id);
-    
-    if (!budget || budget.user_id !== req.user.userId) {
-      return res.status(404).json({ error: 'Budget not found' });
-    }
-    
-    deleteBudget(req.params.id);
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Delete budget error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+router.delete('/:id', (req, res, next) => {
+  const budget = getBudgetById(req.params.id);
+
+  if (!budget) {
+    return next(new NotFoundError('Budget not found'));
   }
+
+  if (budget.user_id !== req.user.userId) {
+    return next(new AuthorizationError('Access denied'));
+  }
+
+  deleteBudget(req.params.id);
+  return res.json({ success: true });
 });
 
 module.exports = router;
