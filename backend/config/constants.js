@@ -4,8 +4,25 @@
  */
 
 // Environment configuration
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+
+  if (secret) {
+    if (secret === "dev-secret-change") {
+      console.warn("SECURITY WARNING: Replace default JWT secret before production deployment");
+    }
+    return secret;
+  }
+
+  if (process.env.NODE_ENV === "test" || process.env.FINTRACKR_DISABLE_PERSIST === "true") {
+    return "test-secret";
+  }
+
+  throw new Error("JWT_SECRET environment variable is required. Set a strong secret in .env");
+};
+
 const ENV = {
-  JWT_SECRET: process.env.JWT_SECRET || "dev-secret-change",
+  JWT_SECRET: getJwtSecret(),
   PORT: process.env.PORT || 3000,
   COOKIE_SECURE: process.env.COOKIE_SECURE === "true",
   COOKIE_SAMESITE: process.env.COOKIE_SAMESITE || (process.env.NODE_ENV === "production" ? "Strict" : "Lax"),

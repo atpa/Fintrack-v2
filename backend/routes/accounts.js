@@ -13,6 +13,8 @@ const {
   deleteAccount
 } = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
+const { validationMiddleware } = require('../middleware/validation');
+const { accountIdParams, createAccountSchema, updateAccountSchema } = require('../validation/accounts');
 
 // Apply authentication middleware to all routes
 router.use(authenticateRequest);
@@ -35,9 +37,9 @@ router.get('/', (req, res) => {
  * GET /api/accounts/:id
  * Get specific account by ID
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', validationMiddleware(accountIdParams), (req, res) => {
   try {
-    const account = getAccountById(req.params.id);
+    const account = getAccountById(req.validated.id);
     
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -58,21 +60,17 @@ router.get('/:id', (req, res) => {
  * POST /api/accounts
  * Create new account
  */
-router.post('/', (req, res) => {
+router.post('/', validationMiddleware(createAccountSchema), (req, res) => {
   try {
-    const { name, currency, balance } = req.body;
-    
-    if (!name || !currency) {
-      return res.status(400).json({ error: 'Name and currency are required' });
-    }
+    const { name, currency, balance } = req.validated;
     
     const accountId = createAccount(
       req.user.userId,
       name,
       currency,
-      balance || 0
+      balance ?? 0
     );
-    
+
     const account = getAccountById(accountId);
     res.status(201).json(account);
   } catch (error) {
@@ -85,9 +83,9 @@ router.post('/', (req, res) => {
  * PUT /api/accounts/:id
  * Update account
  */
-router.put('/:id', (req, res) => {
+router.put('/:id', validationMiddleware([...accountIdParams, ...updateAccountSchema]), (req, res) => {
   try {
-    const account = getAccountById(req.params.id);
+    const account = getAccountById(req.validated.id);
     
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -97,16 +95,16 @@ router.put('/:id', (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
     
-    const { name, currency, balance } = req.body;
+    const { name, currency, balance } = req.validated;
     const updates = {};
     
     if (name !== undefined) updates.name = name;
     if (currency !== undefined) updates.currency = currency;
     if (balance !== undefined) updates.balance = balance;
     
-    updateAccount(req.params.id, updates);
-    
-    const updatedAccount = getAccountById(req.params.id);
+    updateAccount(req.validated.id, updates);
+
+    const updatedAccount = getAccountById(req.validated.id);
     res.json(updatedAccount);
   } catch (error) {
     console.error('Update account error:', error);
@@ -118,9 +116,9 @@ router.put('/:id', (req, res) => {
  * DELETE /api/accounts/:id
  * Delete account
  */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validationMiddleware(accountIdParams), (req, res) => {
   try {
-    const account = getAccountById(req.params.id);
+    const account = getAccountById(req.validated.id);
     
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
@@ -130,7 +128,7 @@ router.delete('/:id', (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
     
-    deleteAccount(req.params.id);
+    deleteAccount(req.validated.id);
     res.json({ success: true });
   } catch (error) {
     console.error('Delete account error:', error);

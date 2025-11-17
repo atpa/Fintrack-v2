@@ -13,6 +13,8 @@ const {
   deleteCategory
 } = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
+const { validationMiddleware } = require('../middleware/validation');
+const { categoryIdParams, createCategorySchema, updateCategorySchema } = require('../validation/categories');
 
 router.use(authenticateRequest);
 
@@ -34,17 +36,9 @@ router.get('/', (req, res) => {
  * POST /api/categories
  * Create new category
  */
-router.post('/', (req, res) => {
+router.post('/', validationMiddleware(createCategorySchema), (req, res) => {
   try {
-    const { name, kind } = req.body;
-    
-    if (!name || !kind) {
-      return res.status(400).json({ error: 'Name and kind are required' });
-    }
-    
-    if (!['income', 'expense'].includes(kind)) {
-      return res.status(400).json({ error: 'Kind must be income or expense' });
-    }
+    const { name, kind } = req.validated;
     
     const categoryId = createCategory(req.user.userId, name, kind);
     const category = getCategoryById(categoryId);
@@ -60,9 +54,9 @@ router.post('/', (req, res) => {
  * PUT /api/categories/:id
  * Update category
  */
-router.put('/:id', (req, res) => {
+router.put('/:id', validationMiddleware([...categoryIdParams, ...updateCategorySchema]), (req, res) => {
   try {
-    const category = getCategoryById(req.params.id);
+    const category = getCategoryById(req.validated.id);
     
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
@@ -72,19 +66,16 @@ router.put('/:id', (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
     
-    const { name, kind } = req.body;
+    const { name, kind } = req.validated;
     const updates = {};
     
     if (name !== undefined) updates.name = name;
     if (kind !== undefined) {
-      if (!['income', 'expense'].includes(kind)) {
-        return res.status(400).json({ error: 'Kind must be income or expense' });
-      }
       updates.kind = kind;
     }
     
-    updateCategory(req.params.id, updates);
-    const updated = getCategoryById(req.params.id);
+    updateCategory(req.validated.id, updates);
+    const updated = getCategoryById(req.validated.id);
     
     res.json(updated);
   } catch (error) {
@@ -97,9 +88,9 @@ router.put('/:id', (req, res) => {
  * DELETE /api/categories/:id
  * Delete category
  */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validationMiddleware(categoryIdParams), (req, res) => {
   try {
-    const category = getCategoryById(req.params.id);
+    const category = getCategoryById(req.validated.id);
     
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
@@ -109,7 +100,7 @@ router.delete('/:id', (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
     
-    deleteCategory(req.params.id);
+    deleteCategory(req.validated.id);
     res.json({ success: true });
   } catch (error) {
     console.error('Delete category error:', error);
