@@ -15,7 +15,7 @@ const currencyRouter = require('./routes/currency');
 const metaRouter = require('./routes/meta');
 const syncRouter = require('./routes/sync');
 const authRouter = require('./routes/auth');
-const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { errorHandler, notFoundHandler, AppError } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -38,7 +38,9 @@ app.use('/api/sync', syncRouter);
 app.use('/api', authRouter);
 
 // Fallback for unmatched API routes
-app.use('/api', notFoundHandler);
+app.use('/api', (req, res, next) => {
+  next(new AppError('Not found', 404));
+});
 
 // Static files
 const publicDir = path.join(__dirname, '..', 'public');
@@ -55,6 +57,7 @@ app.use((req, res, next) => {
   return res.status(404).sendFile(path.join(publicDir, '404.html'));
 });
 
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 module.exports = app;
