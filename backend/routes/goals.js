@@ -11,7 +11,7 @@ const {
   createGoal,
   updateGoal,
   deleteGoal
-} = require('../services/dataService.new');
+} = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
 
 router.use(authenticateRequest);

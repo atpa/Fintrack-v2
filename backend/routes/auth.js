@@ -23,7 +23,7 @@ const {
   deleteRefreshToken,
   addTokenToBlacklist,
   isTokenBlacklisted
-} = require('../services/dataService.new');
+} = require('../services/dataService');
 const { parseCookies } = require('../services/authService');
 
 /**
@@ -173,7 +173,7 @@ router.post('/refresh', (req, res) => {
     }
     
     // Generate new access token
-    const user = require('../services/dataService.new').getUserById(tokenRecord.user_id);
+    const user = require('../services/dataService').getUserById(tokenRecord.user_id);
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }
@@ -215,7 +215,7 @@ router.get('/session', (req, res) => {
     
     try {
       const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
-      const user = require('../services/dataService.new').getUserById(payload.userId);
+      const user = require('../services/dataService').getUserById(payload.userId);
       
       if (!user) {
         return res.status(401).json({ error: 'User not found' });
@@ -228,7 +228,7 @@ router.get('/session', (req, res) => {
       if (refreshToken) {
         const tokenRecord = getRefreshToken(refreshToken);
         if (tokenRecord && tokenRecord.expires_at > Date.now()) {
-          const user = require('../services/dataService.new').getUserById(tokenRecord.user_id);
+          const user = require('../services/dataService').getUserById(tokenRecord.user_id);
           if (user) {
             const newAccessToken = generateAccessToken({ userId: user.id, email: user.email });
             setAuthCookies(res, { accessToken: newAccessToken, refreshToken });

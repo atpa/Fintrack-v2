@@ -11,7 +11,7 @@ const {
   createAccount,
   updateAccount,
   deleteAccount
-} = require('../services/dataService.new');
+} = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
 
 // Apply authentication middleware to all routes

@@ -6,7 +6,7 @@
 const jwt = require('jsonwebtoken');
 const { ENV } = require('../config/constants');
 const { parseCookies } = require('../services/authService');
-const { isTokenBlacklisted } = require('../services/dataService.new');
+const { isTokenBlacklisted } = require('../services/dataService');
 
 /**
  * Authenticate request using JWT from cookies
