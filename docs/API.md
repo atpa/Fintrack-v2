@@ -30,7 +30,11 @@ Or use the `auth` cookie (automatically set on login).
 ### Error Response
 ```json
 {
-  "error": "Error message"
+  "message": "Human friendly description",
+  "code": "ERROR_CODE",
+  "details": [
+    { "field": "name", "message": "Name is required" }
+  ]
 }
 ```
 
@@ -38,11 +42,11 @@ Or use the `auth` cookie (automatically set on login).
 
 - `200 OK` - Successful GET, PUT
 - `201 Created` - Successful POST (resource created)
-- `400 Bad Request` - Validation error or missing required fields
-- `401 Unauthorized` - Missing or invalid authentication
-- `403 Forbidden` - Authenticated but not authorized for this resource
-- `404 Not Found` - Resource not found
-- `500 Internal Server Error` - Server error
+- `400 Bad Request` - Validation error or missing required fields (`VALIDATION_ERROR`)
+- `401 Unauthorized` - Missing or invalid authentication (`AUTHENTICATION_ERROR`)
+- `403 Forbidden` - Authenticated but not authorized for this resource (`FORBIDDEN`)
+- `404 Not Found` - Resource not found (`NOT_FOUND`)
+- `500 Internal Server Error` - Server error (`INTERNAL_ERROR`)
 
 ---
 

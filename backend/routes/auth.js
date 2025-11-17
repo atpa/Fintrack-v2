@@ -25,54 +25,45 @@ const {
   isTokenBlacklisted
 } = require('../services/dataService');
 const { parseCookies } = require('../services/authService');
+const { ValidationError, AuthenticationError } = require('../middleware/errorHandler');
 
 /**
  * POST /api/register
  * Register a new user
  */
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-    
-    // Validation
+
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password are required' });
+      return next(new ValidationError('Name, email, and password are required'));
     }
-    
+
     if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      return next(new ValidationError('Password must be at least 6 characters'));
     }
-    
-    // Check if user exists
+
     const existing = getUserByEmail(email);
     if (existing) {
-      return res.status(400).json({ error: 'Email already registered' });
+      return next(new ValidationError('Email already registered'));
     }
-    
-    // Hash password
+
     const passwordHash = await bcrypt.hash(password, 10);
-    
-    // Create user
+
     const userId = createUser(name, email, passwordHash);
-    
-    // Generate tokens
+
     const accessToken = generateAccessToken({ userId, email });
     const refreshToken = generateRefreshToken();
     const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
-    
-    // Save refresh token
+
     createRefreshToken(userId, refreshToken, expiresAt);
-    
-    // Set cookies
     setAuthCookies(res, { accessToken, refreshToken });
-    
-    // Return user data
+
     res.status(201).json({
       user: { id: userId, name, email }
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -80,45 +71,36 @@ router.post('/register', async (req, res) => {
  * POST /api/login
  * Authenticate user and return tokens
  */
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    
-    // Validation
+
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return next(new ValidationError('Email and password are required'));
     }
-    
-    // Find user
+
     const user = getUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return next(new AuthenticationError('Invalid credentials'));
     }
-    
-    // Verify password
+
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return next(new AuthenticationError('Invalid credentials'));
     }
-    
-    // Generate tokens
+
     const accessToken = generateAccessToken({ userId: user.id, email: user.email });
     const refreshToken = generateRefreshToken();
     const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
-    
-    // Save refresh token
+
     createRefreshToken(user.id, refreshToken, expiresAt);
-    
-    // Set cookies
     setAuthCookies(res, { accessToken, refreshToken });
-    
-    // Return user data
+
     res.json({
       user: sanitizeUser(user)
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -126,29 +108,25 @@ router.post('/login', async (req, res) => {
  * POST /api/logout
  * Logout user and invalidate tokens
  */
-router.post('/logout', (req, res) => {
+router.post('/logout', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const refreshToken = cookies.refresh_token;
     const accessToken = cookies.access_token;
-    
-    // Invalidate refresh token
+
     if (refreshToken) {
       deleteRefreshToken(refreshToken);
     }
-    
-    // Blacklist access token
+
     if (accessToken) {
       addTokenToBlacklist(accessToken);
     }
-    
-    // Clear cookies
+
     clearAuthCookies(res);
-    
+
     res.json({ success: true });
   } catch (error) {
-    console.error('Logout error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -156,37 +134,32 @@ router.post('/logout', (req, res) => {
  * POST /api/refresh
  * Refresh access token using refresh token
  */
-router.post('/refresh', (req, res) => {
+router.post('/refresh', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const refreshToken = cookies.refresh_token;
-    
+
     if (!refreshToken) {
-      return res.status(401).json({ error: 'No refresh token' });
+      return next(new AuthenticationError('No refresh token'));
     }
-    
-    // Verify refresh token exists and not expired
+
     const tokenRecord = getRefreshToken(refreshToken);
     if (!tokenRecord || tokenRecord.expires_at < Date.now()) {
       clearAuthCookies(res);
-      return res.status(401).json({ error: 'Invalid or expired refresh token' });
+      return next(new AuthenticationError('Invalid or expired refresh token'));
     }
-    
-    // Generate new access token
+
     const user = require('../services/dataService').getUserById(tokenRecord.user_id);
     if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      return next(new AuthenticationError('User not found'));
     }
-    
+
     const accessToken = generateAccessToken({ userId: user.id, email: user.email });
-    
-    // Set new access token cookie (keep same refresh token)
     setAuthCookies(res, { accessToken, refreshToken });
-    
+
     res.json({ success: true });
   } catch (error) {
-    console.error('Refresh error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
@@ -194,36 +167,33 @@ router.post('/refresh', (req, res) => {
  * GET /api/session
  * Check if user is authenticated and return user data
  */
-router.get('/session', (req, res) => {
+router.get('/session', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const accessToken = cookies.access_token;
-    
+
     if (!accessToken) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return next(new AuthenticationError('Not authenticated'));
     }
-    
-    // Check if token is blacklisted
+
     if (isTokenBlacklisted(accessToken)) {
       clearAuthCookies(res);
-      return res.status(401).json({ error: 'Token invalidated' });
+      return next(new AuthenticationError('Token invalidated'));
     }
-    
-    // Verify token
+
     const jwt = require('jsonwebtoken');
     const { ENV } = require('../config/constants');
-    
+
     try {
       const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
       const user = require('../services/dataService').getUserById(payload.userId);
-      
+
       if (!user) {
-        return res.status(401).json({ error: 'User not found' });
+        return next(new AuthenticationError('User not found'));
       }
-      
-      res.json({ user: sanitizeUser(user) });
+
+      return res.json({ user: sanitizeUser(user) });
     } catch (jwtError) {
-      // Token expired or invalid - try to refresh
       const refreshToken = cookies.refresh_token;
       if (refreshToken) {
         const tokenRecord = getRefreshToken(refreshToken);
@@ -236,13 +206,12 @@ router.get('/session', (req, res) => {
           }
         }
       }
-      
+
       clearAuthCookies(res);
-      return res.status(401).json({ error: 'Token expired' });
+      return next(new AuthenticationError('Token expired'));
     }
   } catch (error) {
-    console.error('Session error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
