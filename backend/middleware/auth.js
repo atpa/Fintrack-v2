@@ -29,8 +29,9 @@ function authenticateRequest(req, res, next) {
     // Verify token
     try {
       const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
+      const uid = payload.userId || payload.sub; // support legacy and new token shape
       req.user = {
-        userId: payload.userId,
+        userId: uid,
         email: payload.email
       };
       next();
@@ -58,8 +59,9 @@ function optionalAuth(req, res, next) {
     if (accessToken && !isTokenBlacklisted(accessToken)) {
       try {
         const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
+        const uid = payload.userId || payload.sub;
         req.user = {
-          userId: payload.userId,
+          userId: uid,
           email: payload.email
         };
       } catch (jwtError) {

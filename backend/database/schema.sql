@@ -214,3 +214,14 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_session_id ON sessions(session_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_is_active ON sessions(is_active);
+
+-- Currency rates table for cached FX lookups
+CREATE TABLE IF NOT EXISTS currency_rates (
+  base_currency TEXT NOT NULL,
+  quote_currency TEXT NOT NULL,
+  rate REAL NOT NULL,
+  as_of DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (base_currency, quote_currency)
+);
+
+CREATE INDEX IF NOT EXISTS idx_currency_rates_base ON currency_rates(base_currency);

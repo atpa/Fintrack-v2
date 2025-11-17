@@ -346,3 +346,14 @@
 - **Responsive дизайн:** Создан `responsive-tables.css` - mobile-first подход, таблицы → card view на <768px
 - Добавлены `data-label` атрибуты для адаптивных таблиц
 - Grid системы: wallet-grid, filter-grid, form-grid, stats-grid с адаптивными breakpoints
+
+## Parallel Task Plan (18.11.2025)
+
+1. **Backend Core & Auth Hardening** (#1, #3, #4, #7, #20, #22) — разбить `server.js` на Express-приложение, довести маршруты/контроллеры/сервисы и усилить JWT/2FA/сессии.
+2. **API Safety & Resilience** (#2, #5, #6, #9, #10, #11) — централизованный error handling, валидация, rate limiting, структурное логирование и строгий CORS для всех endpoint'ов.
+3. **Data Platform & Persistence** (#8, #12, #18, #31, #32, #33) — объединить варианты `dataService`, добавить миграции/сиды и автоматизацию схем/индексов/бэкапов.
+4. **Service Integrations** (#13, #14, #15, #21, #23) — довести currency/email/ML/Canvas модули с TTL, ретраями и мониторингом.
+5. **Frontend API Client & State** (#18, #24, #25, #27) — завершить рефактор `api.js`, синхронизировать загрузчики данных, переработать валидацию/лоадеры и пройти a11y-аудит.
+6. **UI/UX Polish & Theming** (#24, #26, #28, #29, #30) — закончить responsive‑таблицы, тёмную тему design-system, обновить иконки и микроанимации.
+7. **Testing & Automation** (#31, #36, #44, #45, #46, #47) — поднять покрытие Jest, добавить integration + Playwright сценарии, настроить отчёты и npm-скрипты.
+8. **Delivery, Infra & Docs** (#36, #37, #38, #39, #40, #41, #42, #43, #48, #49, #50, #51) — закрыть сборщик/PWA, нормализовать env-скрипты, добавить Docker + CI/CD и обновить API/README/ER.

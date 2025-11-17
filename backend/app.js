@@ -15,7 +15,7 @@ const currencyRouter = require('./routes/currency');
 const metaRouter = require('./routes/meta');
 const syncRouter = require('./routes/sync');
 const authRouter = require('./routes/auth');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const { AppError } = require('./utils/responses');
 
 const app = express();
@@ -32,7 +32,8 @@ app.use('/api/goals', goalsRouter);
 app.use('/api/planned', plannedRouter);
 app.use('/api/subscriptions', subscriptionsRouter);
 app.use('/api/rules', rulesRouter);
-app.use('/api', analyticsRouter);
+// Mount analytics endpoints under dedicated path to avoid protecting public auth/currency endpoints
+app.use('/api/analytics', analyticsRouter);
 app.use('/api', currencyRouter);
 app.use('/api', metaRouter);
 app.use('/api/sync', syncRouter);

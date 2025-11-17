@@ -18,20 +18,26 @@ let db = null;
  */
 function initDB() {
   if (db) return db;
-  
-  const dbExists = fs.existsSync(dbPath);
-  
-  db = new Database(dbPath);
+
+  const useMemory = ENV.DISABLE_PERSIST === true;
+  const target = useMemory ? ':memory:' : dbPath;
+  const dbExists = useMemory ? false : fs.existsSync(dbPath);
+
+  db = new Database(target);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-  
-  // Initialize schema if database is new
-  if (!dbExists) {
+
+  // Always initialize schema for in-memory DB or first creation
+  if (useMemory || !dbExists) {
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     db.exec(schema);
-    console.log('✅ Database initialized with schema');
+    if (useMemory) {
+      console.log('🧪 In-memory test database initialized');
+    } else {
+      console.log('✅ Database initialized with schema');
+    }
   }
-  
+
   return db;
 }
 
