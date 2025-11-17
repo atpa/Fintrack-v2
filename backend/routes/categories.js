@@ -12,6 +12,7 @@ const {
   deleteCategory,
 } = require('../controllers/categoriesController');
 const { authenticateRequest } = require('../middleware/auth');
+const { ValidationError, AuthorizationError, NotFoundError } = require('../middleware/errorHandler');
 
 router.use(authenticateRequest);
 

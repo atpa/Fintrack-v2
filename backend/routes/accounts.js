@@ -13,6 +13,7 @@ const {
   deleteAccount
 } = require('../controllers/accountsController');
 const { authenticateRequest } = require('../middleware/auth');
+const { ValidationError, AuthorizationError, NotFoundError } = require('../middleware/errorHandler');
 
 // Apply authentication middleware to all routes
 router.use(authenticateRequest);

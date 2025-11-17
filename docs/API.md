@@ -1,10 +1,11 @@
-# FinTrackr REST API Documentation
+# FinTrackr API
 
-## Base URL
+The FinTrackr backend is a cookie-authenticated Express API served from `/api`. Responses are JSON. Authenticated routes require a valid access token stored in the `access_token` cookie (automatically set by the auth endpoints) or provided as a `Bearer` token.
 
-```
-http://localhost:3000/api
-```
+- **Base URL (local)**: `http://localhost:3000/api`
+- **Content type**: `application/json`
+- **Auth**: JWT cookies (`access_token`, `refresh_token`) issued by `/api/login` or `/api/register`
+- **Error shape**: `{ "error": "Message" }` with appropriate HTTP status (400/401/403/404/500)
 
 ## Authentication
 
@@ -30,7 +31,11 @@ Or use the `auth` cookie (automatically set on login).
 ### Error Response
 ```json
 {
-  "error": "Error message"
+  "message": "Human friendly description",
+  "code": "ERROR_CODE",
+  "details": [
+    { "field": "name", "message": "Name is required" }
+  ]
 }
 ```
 
@@ -38,11 +43,11 @@ Or use the `auth` cookie (automatically set on login).
 
 - `200 OK` - Successful GET, PUT
 - `201 Created` - Successful POST (resource created)
-- `400 Bad Request` - Validation error or missing required fields
-- `401 Unauthorized` - Missing or invalid authentication
-- `403 Forbidden` - Authenticated but not authorized for this resource
-- `404 Not Found` - Resource not found
-- `500 Internal Server Error` - Server error
+- `400 Bad Request` - Validation error or missing required fields (`VALIDATION_ERROR`)
+- `401 Unauthorized` - Missing or invalid authentication (`AUTHENTICATION_ERROR`)
+- `403 Forbidden` - Authenticated but not authorized for this resource (`FORBIDDEN`)
+- `404 Not Found` - Resource not found (`NOT_FOUND`)
+- `500 Internal Server Error` - Server error (`INTERNAL_ERROR`)
 
 ---
 
