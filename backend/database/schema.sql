@@ -197,14 +197,20 @@ CREATE INDEX IF NOT EXISTS idx_token_blacklist_token ON token_blacklist(token);
 -- Sessions table for enhanced security (Phase 4)
 CREATE TABLE IF NOT EXISTS sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id TEXT UNIQUE NOT NULL,
   user_id INTEGER NOT NULL,
-  refresh_token TEXT NOT NULL,
-  device_info TEXT,
+  device_name TEXT,
+  device_type TEXT,
   ip_address TEXT,
-  last_activity DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_agent TEXT,
+  location TEXT,
+  is_active INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_activity DATETIME DEFAULT CURRENT_TIMESTAMP,
+  revoked_at DATETIME,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-CREATE INDEX IF NOT EXISTS idx_sessions_refresh_token ON sessions(refresh_token);
+CREATE INDEX IF NOT EXISTS idx_sessions_session_id ON sessions(session_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_is_active ON sessions(is_active);

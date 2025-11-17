@@ -10,8 +10,8 @@ describe('MLAnalyticsService', () => {
   beforeEach(() => {
     // Mock data service with sample transactions
     mockDataService = {
-      getTransactionsByUser: jest.fn(),
-      getBudgetsByUser: jest.fn(),
+      getTransactionsByUserId: jest.fn(),
+      getBudgetsByUserId: jest.fn(),
     };
 
     // Import service after mocking
@@ -34,7 +34,7 @@ describe('MLAnalyticsService', () => {
           category_id: 1,
         });
       }
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
 
       const prediction = await mlService.predictSpending(1, 3);
 
@@ -49,7 +49,7 @@ describe('MLAnalyticsService', () => {
       const transactions = [
         { user_id: 1, amount: 1000, type: 'expense', date: new Date().toISOString() },
       ];
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
 
       const prediction = await mlService.predictSpending(1, 1);
 
@@ -76,14 +76,14 @@ describe('MLAnalyticsService', () => {
           category_id: 1,
         },
       ];
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
 
       const anomalies = await mlService.detectAnomalies(1, 2);
 
       expect(anomalies).toHaveProperty('anomalies');
       expect(anomalies.anomalies.length).toBeGreaterThan(0);
       expect(anomalies.anomalies[0]).toHaveProperty('severity');
-      expect(anomalies.anomalies[0]).toHaveProperty('zscore');
+      expect(anomalies.anomalies[0]).toHaveProperty('reason');
     });
 
     it('should return empty array when no anomalies', async () => {
@@ -94,7 +94,7 @@ describe('MLAnalyticsService', () => {
         date: new Date().toISOString(),
         category_id: 1,
       }));
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
 
       const anomalies = await mlService.detectAnomalies(1, 3);
 
@@ -111,18 +111,16 @@ describe('MLAnalyticsService', () => {
         date: new Date().toISOString(),
         category_id: 1,
       }));
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
-      mockDataService.getBudgetsByUser.mockResolvedValue([]);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
+      mockDataService.getBudgetsByUserId.mockResolvedValue([]);
 
       const recommendations = await mlService.generateBudgetRecommendations(1);
 
-      expect(recommendations).toHaveProperty('recommendations');
-      expect(recommendations.recommendations).toBeInstanceOf(Array);
-      if (recommendations.recommendations.length > 0) {
-        expect(recommendations.recommendations[0]).toHaveProperty('category_id');
-        expect(recommendations.recommendations[0]).toHaveProperty('suggested_limit');
-        expect(recommendations.recommendations[0]).toHaveProperty('confidence');
-      }
+      expect(recommendations).toBeInstanceOf(Array);
+      expect(recommendations.length).toBeGreaterThan(0);
+      expect(recommendations[0]).toHaveProperty('category_id');
+      expect(recommendations[0]).toHaveProperty('recommended_limit');
+      expect(recommendations[0]).toHaveProperty('confidence');
     });
   });
 
@@ -142,12 +140,12 @@ describe('MLAnalyticsService', () => {
           category_id: 1,
         });
       }
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
 
       const recurring = await mlService.identifyRecurringExpenses(1);
 
-      expect(recurring).toHaveProperty('recurring');
-      expect(recurring.recurring).toBeInstanceOf(Array);
+      expect(recurring).toBeInstanceOf(Array);
+      expect(recurring.length).toBeGreaterThan(0);
     });
   });
 
@@ -159,19 +157,18 @@ describe('MLAnalyticsService', () => {
         type: 'expense',
         date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
         category_id: 1,
+        description: `Transaction ${i}`,
       }));
-      mockDataService.getTransactionsByUser.mockResolvedValue(transactions);
-      mockDataService.getBudgetsByUser.mockResolvedValue([]);
+      mockDataService.getTransactionsByUserId.mockResolvedValue(transactions);
+      mockDataService.getBudgetsByUserId.mockResolvedValue([]);
 
       const insights = await mlService.generateInsights(1);
 
-      expect(insights).toHaveProperty('insights');
-      expect(insights.insights).toBeInstanceOf(Array);
-      if (insights.insights.length > 0) {
-        expect(insights.insights[0]).toHaveProperty('type');
-        expect(insights.insights[0]).toHaveProperty('message');
-        expect(insights.insights[0]).toHaveProperty('priority');
-      }
+      expect(insights).toBeInstanceOf(Array);
+      expect(insights.length).toBeGreaterThan(0);
+      expect(insights[0]).toHaveProperty('type');
+      expect(insights[0]).toHaveProperty('message');
+      expect(insights[0]).toHaveProperty('priority');
     });
   });
 });
