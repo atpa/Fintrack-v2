@@ -19,6 +19,8 @@ const {
 } = require('../services/dataService');
 const { authenticateRequest } = require('../middleware/auth');
 const { convertAmount } = require('../services/currencyService');
+const { validationMiddleware } = require('../middleware/validation');
+const { transactionIdParams, createTransactionSchema } = require('../validation/transactions');
 
 router.use(authenticateRequest);
 
@@ -40,18 +42,9 @@ router.get('/', (req, res) => {
  * POST /api/transactions
  * Create new transaction and update account balance and budgets
  */
-router.post('/', (req, res) => {
+router.post('/', validationMiddleware(createTransactionSchema), (req, res) => {
   try {
-    const { account_id, category_id, type, amount, currency, date, note } = req.body;
-    
-    // Validation
-    if (!account_id || !type || !amount || !currency || !date) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-    
-    if (!['income', 'expense'].includes(type)) {
-      return res.status(400).json({ error: 'Type must be income or expense' });
-    }
+    const { account_id, category_id, type, amount, currency, date, note } = req.validated;
     
     // Verify account ownership
     const account = getAccountById(account_id);
@@ -105,9 +98,9 @@ router.post('/', (req, res) => {
  * DELETE /api/transactions/:id
  * Delete transaction and revert account balance and budget
  */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validationMiddleware(transactionIdParams), (req, res) => {
   try {
-    const transaction = getTransactionById(req.params.id);
+    const transaction = getTransactionById(req.validated.id);
     
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
@@ -139,7 +132,7 @@ router.delete('/:id', (req, res) => {
       }
     }
     
-    deleteTransaction(req.params.id);
+    deleteTransaction(req.validated.id);
     res.json({ success: true });
   } catch (error) {
     console.error('Delete transaction error:', error);
