@@ -1,10 +1,11 @@
-# FinTrackr REST API Documentation
+# FinTrackr API
 
-## Base URL
+The FinTrackr backend is a cookie-authenticated Express API served from `/api`. Responses are JSON. Authenticated routes require a valid access token stored in the `access_token` cookie (automatically set by the auth endpoints) or provided as a `Bearer` token.
 
-```
-http://localhost:3000/api
-```
+- **Base URL (local)**: `http://localhost:3000/api`
+- **Content type**: `application/json`
+- **Auth**: JWT cookies (`access_token`, `refresh_token`) issued by `/api/login` or `/api/register`
+- **Error shape**: `{ "error": "Message" }` with appropriate HTTP status (400/401/403/404/500)
 
 ## Authentication
 

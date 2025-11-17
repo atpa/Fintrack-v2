@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { validationMiddleware } = require('../middleware/validation');
+const { registerSchema, loginSchema } = require('../validation/auth');
 const {
   generateAccessToken,
   generateRefreshToken,
