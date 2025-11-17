@@ -1,3 +1,11 @@
+/**
+ * Categories management module
+ * @module categories
+ */
+import API from './utils/api.js';
+import { setFieldError, clearAllFieldErrors, validateRequired } from './utils/validation.js';
+import Pagination from './utils/pagination.js';
+
 const categoryState = {
   categories: [],
   filtered: [],
@@ -12,10 +20,6 @@ const pagination = new Pagination({
     renderCategories();
   }
 });
-
-// Функция setFieldError заменена на утилиту validation.js
-
-// Функции пагинации заменены на утилиту Pagination (см. строки 6-14)
 
 function renderCategories() {
   const tbody = document.querySelector('#categoriesTable tbody');
@@ -36,11 +40,17 @@ function renderCategories() {
 
   pageItems.forEach((cat) => {
     const tr = document.createElement('tr');
+    
     const nameTd = document.createElement('td');
+    nameTd.setAttribute('data-label', 'Название');
     nameTd.textContent = cat.name;
+    
     const kindTd = document.createElement('td');
+    kindTd.setAttribute('data-label', 'Тип');
     kindTd.textContent = cat.kind === 'income' ? 'Доход' : 'Расход';
+    
     const actionsTd = document.createElement('td');
+    actionsTd.setAttribute('data-label', 'Действие');
     actionsTd.style.display = 'flex';
     actionsTd.style.gap = '0.5rem';
 
@@ -77,7 +87,19 @@ function applyFilters() {
 }
 
 async function loadCategories() {
-  const categories = await fetchData('/api/categories');
+  const tbody = document.querySelector('#categoriesTable tbody');
+  if (tbody) {
+    tbody.innerHTML = '<tr><td colspan="3">Загрузка...</td></tr>';
+  }
+  const resp = await API.categories.list();
+  if (!resp.ok) {
+    categoryState.categories = [];
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="3">Ошибка загрузки категорий: ${resp.error}</td></tr>`;
+    }
+    return;
+  }
+  const categories = resp.data || [];
   categoryState.categories = Array.isArray(categories) ? categories : [];
   applyFilters();
 }
@@ -137,21 +159,16 @@ function bindForm() {
     if (!valid) return;
 
     try {
-      const resp = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, kind }),
-      });
+      const resp = await API.categories.create({ name, kind });
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
         UI.showToast({
           type: 'danger',
-          message: err.error || 'Не удалось добавить категорию',
+          message: resp.error || 'Не удалось добавить категорию',
         });
         return;
       }
-      const created = await resp.json();
-      categoryState.categories.push(created);
+      const created = resp.data;
+      if (created) categoryState.categories.push(created);
       UI.showToast({ type: 'success', message: 'Категория добавлена' });
       form.reset();
       applyFilters();
@@ -171,12 +188,11 @@ async function confirmDelete(cat) {
   });
   if (!confirmed) return;
   try {
-    const resp = await fetch(`/api/categories/${cat.id}`, { method: 'DELETE' });
+    const resp = await API.categories.remove(cat.id);
     if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
       UI.showToast({
         type: 'danger',
-        message: err.error || 'Не удалось удалить категорию',
+        message: resp.error || 'Не удалось удалить категорию',
       });
       return;
     }
@@ -264,20 +280,15 @@ function openEditModal(cat) {
           }
           if (!valid) return;
           try {
-            const resp = await fetch(`/api/categories/${cat.id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: newName, kind: newKind }),
-            });
+            const resp = await API.categories.update(cat.id, { name: newName, kind: newKind });
             if (!resp.ok) {
-              const err = await resp.json().catch(() => ({}));
               UI.showToast({
                 type: 'danger',
-                message: err.error || 'Не удалось обновить категорию',
+                message: resp.error || 'Не удалось обновить категорию',
               });
               return;
             }
-            const updated = await resp.json();
+            const updated = resp.data;
             const idx = categoryState.categories.findIndex((item) => item.id === updated.id);
             if (idx > -1) {
               categoryState.categories[idx] = updated;
@@ -307,8 +318,11 @@ async function initCategoriesPage() {
   bindForm();
 }
 
+// Auto-init on DOM ready
 if (document.readyState !== 'loading') {
   initCategoriesPage();
 } else {
   document.addEventListener('DOMContentLoaded', initCategoriesPage);
 }
+
+export { initCategoriesPage };

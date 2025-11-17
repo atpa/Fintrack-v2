@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinTrackr – Операции</title>
+    <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive-tables.css" />
     <script defer src="js/utils/auth.js"></script>
-    <script defer src="js/utils/validation.js"></script>
-    <script defer src="js/utils/pagination.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/utils/ui.js"></script>
-    <script defer src="js/transactions.js"></script>
+    <script type="module" src="js/transactions.js"></script>
   </head>
   <body class="workspace-page" data-page-title="Операции" data-page-subtitle="Все доходы и расходы в одном месте">
     <header>
@@ -161,10 +161,10 @@
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main>
+    <main role="main" aria-label="Управление транзакциями">
       <!-- Форма для добавления новой операции -->
-      <section class="card">
-        <h2>Добавить операцию</h2>
+      <section class="card" aria-labelledby="addTransactionTitle">
+        <h2 id="addTransactionTitle">Добавить операцию</h2>
         <form id="addTransactionForm">
           <div class="form-grid">
             <div class="form-field">

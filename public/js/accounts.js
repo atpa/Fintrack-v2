@@ -1,3 +1,11 @@
+/**
+ * Accounts management module
+ * @module accounts
+ */
+import API from './utils/api.js';
+import { setFieldError, validateRequired } from './utils/validation.js';
+import Pagination from './utils/pagination.js';
+
 const accountState = {
   all: [],
   filtered: [],
@@ -13,10 +21,6 @@ const pagination = new Pagination({
     renderAccounts();
   }
 });
-
-// Функция setFieldError заменена на утилиту validation.js
-
-// Функции пагинации заменены на утилиту Pagination (см. строки 6-13)
 
 function renderAccounts() {
   const list = document.getElementById('accountsList');
@@ -131,18 +135,13 @@ function bindForm() {
     if (!valid) return;
 
     try {
-      const resp = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, currency, balance }),
-      });
+      const resp = await API.accounts.create({ name, currency, balance });
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
-        UI.showToast({ type: 'danger', message: err.error || 'Не удалось добавить счёт' });
+        UI.showToast({ type: 'danger', message: resp.error || 'Не удалось добавить счёт' });
         return;
       }
-      const created = await resp.json();
-      accountState.all.push(created);
+      const created = resp.data;
+      if (created) accountState.all.push(created);
       UI.showToast({ type: 'success', message: 'Счёт добавлен' });
       form.reset();
       applyFilters();
@@ -157,8 +156,15 @@ async function initAccountsPage() {
   const list = document.getElementById('accountsList');
   if (!list) return;
   
+  list.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p class="empty-text">Загрузка...</p></div>';
+  
   try {
-    const accounts = await fetchData('/api/accounts');
+    const resp = await API.accounts.list();
+    if (!resp.ok) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p class="empty-text">Ошибка загрузки: ${resp.error}</p></div>`;
+      return;
+    }
+    const accounts = resp.data || [];
     accountState.all = Array.isArray(accounts) ? accounts : [];
     accountState.filtered = accountState.all.slice();
     bindFilters();
@@ -167,13 +173,16 @@ async function initAccountsPage() {
   } catch (error) {
     console.error('Не удалось загрузить счета:', error);
     if (list) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p class="empty-text">Ошибка загрузки данных</p></div>';
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p class="empty-text">Ошибка сети</p></div>';
     }
   }
 }
 
+// Auto-init on DOM ready
 if (document.readyState !== 'loading') {
   initAccountsPage();
 } else {
   document.addEventListener('DOMContentLoaded', initAccountsPage);
 }
+
+export { initAccountsPage };

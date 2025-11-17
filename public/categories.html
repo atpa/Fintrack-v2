@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinTrackr – Категории</title>
+    <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive-tables.css" />
     <script defer src="js/utils/auth.js"></script>
-    <script defer src="js/utils/validation.js"></script>
-    <script defer src="js/utils/pagination.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/utils/ui.js"></script>
-    <script defer src="js/categories.js"></script>
+    <script type="module" src="js/categories.js"></script>
   </head>
   <body class="workspace-page" data-page-title="Категории" data-page-subtitle="Организуйте расходы по категориям">
     <header>
@@ -160,9 +160,9 @@
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main>
-      <section class="card">
-        <h2>Добавить категорию</h2>
+    <main role="main" aria-label="Управление категориями">
+      <section class="card" aria-labelledby="addCategoryHeading">
+        <h2 id="addCategoryHeading">Добавить категорию</h2>
         <form id="addCategoryForm">
           <div class="form-grid">
             <div class="form-field">
@@ -184,8 +184,8 @@
           </button>
         </form>
       </section>
-      <section class="card">
-        <h2>Список категорий</h2>
+      <section class="card" aria-labelledby="categoriesListHeading">
+        <h2 id="categoriesListHeading">Список категорий</h2>
         <div class="filter-grid" style="margin-bottom: 1rem">
           <div class="form-field">
             <label for="categorySearch">Поиск</label>
@@ -204,7 +204,7 @@
             </select>
           </div>
         </div>
-        <table id="categoriesTable">
+        <table id="categoriesTable" class="data-table" aria-label="Таблица категорий">
           <thead>
             <tr>
               <th>Название</th>
