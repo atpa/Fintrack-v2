@@ -55,48 +55,32 @@ class NotFoundError extends AppError {
  */
 function formatErrorResponse(error, includeStack = false) {
   const statusCode = error.statusCode || error.status || 500;
-
   const response = {
     error: error.message || 'Internal server error',
     status: statusCode
   };
-  
   // Add error code if available
   if (error.code) {
     response.code = error.code;
   }
-  
   // Add additional details for operational errors
   if (error.isOperational && error.details) {
     response.details = error.details;
   }
-
   if (error?.type === 'entity.parse.failed') {
     return new ValidationError('Invalid JSON payload');
   }
-
   if (typeof error?.status === 'number' || typeof error?.statusCode === 'number') {
-    const statusCode = error.status || error.statusCode;
+    const codeStatus = error.status || error.statusCode;
     return new AppError(error.message || 'Request failed', {
-      statusCode,
-      code: error.code || STATUS_CODE_TO_CODE[statusCode] || 'INTERNAL_ERROR',
+      statusCode: codeStatus,
+      code: error.code || STATUS_CODE_TO_CODE[codeStatus] || 'INTERNAL_ERROR',
       isOperational: error.isOperational !== false,
     });
   }
-  
-  // Set status code
-  const statusCode = err.statusCode || err.status || 500;
-  res.statusCode = statusCode;
-  
-  // Set content type
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  
-  // Format and send error response
-  const errorResponse = formatErrorResponse(err, process.env.NODE_ENV !== 'production');
-  res.end(JSON.stringify(errorResponse));
+  return response;
 }
 
-  return new AppError('Internal server error', { isOperational: false });
 }
 
 function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
