@@ -62,9 +62,11 @@ class NotFoundError extends AppError {
  * Creates consistent error response format
  */
 function formatErrorResponse(error, includeStack = false) {
+  const statusCode = error.statusCode || error.status || 500;
+
   const response = {
     error: error.message || 'Internal server error',
-    status: error.statusCode || 500
+    status: statusCode
   };
   
   // Add error code if available
@@ -104,7 +106,7 @@ function errorHandler(err, req, res, next) {
   }
   
   // Set status code
-  const statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || err.status || 500;
   res.statusCode = statusCode;
   
   // Set content type
