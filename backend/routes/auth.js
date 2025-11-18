@@ -9,6 +9,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { validationMiddleware } = require('../middleware/validation');
 const { registerSchema, loginSchema } = require('../validation/auth');
+const { AuthenticationError, ValidationError } = require('../middleware/errorHandler');
 const {
   setAuthCookies,
   clearAuthCookies,
@@ -18,13 +19,13 @@ const {
   addTokenToBlacklist,
   isTokenBlacklisted
 } = require('../services/authService');
-const { getUserByEmail, createUser } = require('../services/dataService');
+const { getUserByEmail, createUser, getRefreshToken, getUserById, migrateSeedDataToUser } = require('../services/dataService');
 
 /**
  * POST /api/register
  * Register a new user
  */
-router.post('/register', validationMiddleware(registerSchema), async (req, res) => {
+router.post('/register', validationMiddleware(registerSchema), async (req, res, next) => {
   try {
     const { name, email, password } = req.validated;
     
@@ -38,6 +39,8 @@ router.post('/register', validationMiddleware(registerSchema), async (req, res) 
 
     const userId = createUser(name, email, passwordHash);
     
+    migrateSeedDataToUser(userId);
+
     // Generate tokens
     const tokens = issueTokensForUser({ id: userId, email });
     setAuthCookies(res, tokens);
@@ -55,7 +58,7 @@ router.post('/register', validationMiddleware(registerSchema), async (req, res) 
  * POST /api/login
  * Authenticate user and return tokens
  */
-router.post('/login', validationMiddleware(loginSchema), async (req, res) => {
+router.post('/login', validationMiddleware(loginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.validated;
     
@@ -105,7 +108,7 @@ router.post('/logout', (req, res, next) => {
  * Refresh access token using refresh token
  */
 // Simplified refresh endpoint using existing cookies (optional for tests)
-router.post('/refresh', (req, res) => {
+router.post('/refresh', (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const accessToken = cookies.access_token;
@@ -139,7 +142,7 @@ router.get('/session', (req, res, next) => {
 
     try {
       const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
-      const user = require('../services/dataService').getUserById(payload.userId);
+      const user = getUserById(payload.userId);
 
       if (!user) {
         return next(new AuthenticationError('User not found'));
@@ -151,10 +154,10 @@ router.get('/session', (req, res, next) => {
       if (refreshToken) {
         const tokenRecord = getRefreshToken(refreshToken);
         if (tokenRecord && tokenRecord.expires_at > Date.now()) {
-          const user = require('../services/dataService').getUserById(tokenRecord.user_id);
+          const user = getUserById(tokenRecord.user_id);
           if (user) {
-            const newAccessToken = generateAccessToken({ userId: user.id, email: user.email });
-            setAuthCookies(res, { accessToken: newAccessToken, refreshToken });
+            const tokens = issueTokensForUser({ id: user.id, email: user.email });
+            setAuthCookies(res, tokens);
             return res.json({ user: sanitizeUser(user) });
           }
         }
