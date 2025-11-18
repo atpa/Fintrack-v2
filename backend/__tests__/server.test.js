@@ -1,6 +1,5 @@
 process.env.FINTRACKR_DISABLE_PERSIST = 'true';
 
-const crypto = require('crypto');
 const request = require('supertest');
 const serverModule = require('../server');
 
@@ -182,6 +181,35 @@ describe('API endpoints', () => {
     expect(updatedData.transactions).toHaveLength(1);
     expect(updatedData.accounts[0].balance).toBe(950);
     expect(updatedData.budgets[0].spent).toBe(50);
+  });
+
+  test('POST /api/transactions surfaces internal errors via handler', async () => {
+    const cookies = await createAuthenticatedUser(app, {
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'testpass123'
+    });
+
+    const payload = {
+      account_id: 1,
+      category_id: 999, // force FK violation
+      type: 'expense',
+      amount: 50,
+      currency: 'USD',
+      date: '2024-01-15',
+      note: 'Groceries',
+    };
+
+    const response = await request(app)
+      .post('/api/transactions')
+      .set('Cookie', `access_token=${cookies.access_token}`)
+      .send(payload);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toMatchObject({
+      code: 'INTERNAL_ERROR',
+    });
+    expect(response.body.message).toMatch(/constraint/i);
   });
 
   test('DELETE /api/categories/:id removes category and associated data', async () => {

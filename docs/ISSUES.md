@@ -46,6 +46,7 @@
    - 200 вместо 201 при создании
    - 500 вместо 400 при валидации
    - **Решение:** Стандартизировать коды ответов
+   - [x] Issue #5 - cleaned up duplicate logic in /api/transactions causing downstream 500s and added regression coverage (2025-11-18)
 
 6. **Недостаточная валидация входных данных**
    - Не все поля проверяются

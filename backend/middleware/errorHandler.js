@@ -49,38 +49,34 @@ class NotFoundError extends AppError {
   }
 }
 
-/**
- * Error response formatter
- * Creates consistent error response format
- */
-function formatErrorResponse(error, includeStack = false) {
-  const statusCode = error.statusCode || error.status || 500;
-  const response = {
-    error: error.message || 'Internal server error',
-    status: statusCode
-  };
-  // Add error code if available
-  if (error.code) {
-    response.code = error.code;
+function normalizeError(error) {
+  if (error instanceof AppError) {
+    return error;
   }
-  // Add additional details for operational errors
-  if (error.isOperational && error.details) {
-    response.details = error.details;
-  }
+
   if (error?.type === 'entity.parse.failed') {
     return new ValidationError('Invalid JSON payload');
   }
+
+  if (error?.name === 'UnauthorizedError') {
+    return new AuthenticationError(error.message || 'Authentication required');
+  }
+
   if (typeof error?.status === 'number' || typeof error?.statusCode === 'number') {
-    const codeStatus = error.status || error.statusCode;
+    const statusCode = error.statusCode || error.status;
     return new AppError(error.message || 'Request failed', {
-      statusCode: codeStatus,
-      code: error.code || STATUS_CODE_TO_CODE[codeStatus] || 'INTERNAL_ERROR',
+      statusCode,
+      code: error.code || STATUS_CODE_TO_CODE[statusCode] || 'INTERNAL_ERROR',
+      details: error.details,
       isOperational: error.isOperational !== false,
     });
   }
-  return response;
-}
 
+  return new AppError(error?.message || 'Internal server error', {
+    statusCode: 500,
+    code: 'INTERNAL_ERROR',
+    isOperational: false,
+  });
 }
 
 function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
@@ -88,7 +84,7 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
 
   if (process.env.NODE_ENV !== 'production' || !normalized.isOperational) {
     // eslint-disable-next-line no-console
-    console.error('[error]', normalized); // Useful for troubleshooting
+    console.error('[error]', normalized);
   }
 
   const payload = {
@@ -113,6 +109,7 @@ module.exports = {
   AuthenticationError,
   AuthorizationError,
   NotFoundError,
+  normalizeError,
   errorHandler,
   notFoundHandler,
 };
