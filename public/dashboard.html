@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -150,89 +150,117 @@
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
-    <main class="workspace-main">
-      <section class="alert-banner alert-banner--info" aria-live="polite">
-        <div>
-          <p class="alert-banner-title">AI ассистент</p>
-          <p class="alert-banner-text">Последние операции синхронизированы. Добавьте бюджет, чтобы получать прогноз экономии.</p>
-        </div>
-        <button class="btn-secondary btn-pill" onclick="location.href='budgets.html'">Создать бюджет</button>
-      </section>
-
-      <section class="stats-grid">
-        <article class="stat-card stat-card--balance">
-          <div class="stat-card-label">Баланс</div>
-          <div class="stat-card-value">
-            <strong id="totalBalance">0.00</strong>
-            <span class="currency-code">USD</span>
-          </div>
-          <p class="stat-card-note">Консолидировано по всем счетам</p>
-        </article>
-        <article class="stat-card stat-card--income">
-          <div class="stat-card-label">Сумма доходов</div>
-          <div class="stat-card-value">
-            <strong id="totalIncome">0.00</strong>
-            <span class="currency-code">USD</span>
-          </div>
-          <p class="stat-card-note">Обновлено сегодня</p>
-        </article>
-        <article class="stat-card stat-card--expense">
-          <div class="stat-card-label">Сумма расходов</div>
-          <div class="stat-card-value">
-            <strong id="totalExpense">0.00</strong>
-            <span class="currency-code">USD</span>
-          </div>
-          <p class="stat-card-note">Включая регулярные платежи</p>
-        </article>
-        <article class="stat-card stat-card--neutral">
-          <div class="stat-card-label">Финансовое здоровье</div>
-          <div class="stat-card-value">
-            <strong id="financialHealth">0%</strong>
-          </div>
-          <div class="progress-bar">
-            <div id="healthProgress" class="progress" style="width:0%"></div>
-          </div>
-        </article>
-      </section>
-
-      <section class="panel-grid">
-        <article class="card card--wide">
-          <div class="card-header">
-            <div>
-              <h2>Расходы по категориям</h2>
-              <p class="card-subtitle">Текущий месяц, обновление ежедневно</p>
+    <main class="workspace-main dashboard-shell" role="main" aria-label="Обзор финансов FinTrackr">
+      <section class="dashboard-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Привет, <span id="heroUserName">друг</span></p>
+            <h1>Дэшборд</h1>
+            <p class="hero-description">Прогнозы, бюджеты и уведомления в едином месте.</p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="heroPeriodLabel">Текущий месяц</span>
+              <span class="hero-pill hero-pill--soft" id="heroPlanLabel">Базовый план</span>
             </div>
-            <button class="btn-secondary btn-pill">Экспорт</button>
           </div>
-          <div class="chart-container">
+          <div class="hero-balance-card">
+            <p class="muted-label">Консолидированный баланс</p>
+            <p class="hero-balance-value">
+              <span id="heroBalanceValue">0.00</span>
+              <span id="heroBalanceCurrency">USD</span>
+            </p>
+            <p class="hero-note" id="heroBalanceHint">Счета: 0</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="location.href='transactions.html#new'">+ Операция</button>
+          <button class="btn-secondary btn-pill" onclick="location.href='budgets.html'">Создать бюджет</button>
+          <button class="btn-ghost btn-pill" onclick="location.href='planned.html'">План на неделю</button>
+        </div>
+      </section>
+
+      <section class="dashboard-metrics" aria-label="Ключевые показатели">
+        <article class="metric-card metric-card--balance">
+          <div>
+            <p class="metric-label">Баланс</p>
+            <p class="metric-value">
+              <strong id="totalBalance">0.00</strong>
+              <span class="currency-code">USD</span>
+            </p>
+          </div>
+          <p class="metric-subtitle">Консолидировано по всем счетам</p>
+        </article>
+        <article class="metric-card metric-card--income">
+          <div>
+            <p class="metric-label">Доходы месяца</p>
+            <p class="metric-value">
+              <strong id="totalIncome">0.00</strong>
+              <span class="currency-code">USD</span>
+            </p>
+          </div>
+          <p class="metric-subtitle">Обновлено сегодня</p>
+        </article>
+        <article class="metric-card metric-card--expense">
+          <div>
+            <p class="metric-label">Расходы месяца</p>
+            <p class="metric-value">
+              <strong id="totalExpense">0.00</strong>
+              <span class="currency-code">USD</span>
+            </p>
+          </div>
+          <p class="metric-subtitle">Включая регулярные платежи</p>
+        </article>
+        <article class="metric-card metric-card--health">
+          <div>
+            <p class="metric-label">Финансовое здоровье</p>
+            <p class="metric-value">
+              <strong id="financialHealth">0%</strong>
+            </p>
+          </div>
+          <div class="metric-progress">
+            <span id="healthProgress" class="metric-progress-fill" style="width:0%"></span>
+          </div>
+          <p class="metric-subtitle">Соотношение доходов и расходов</p>
+        </article>
+      </section>
+
+      <section class="dashboard-panels">
+        <article class="panel panel--chart">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Динамика расходов</p>
+              <h2>Расходы по категориям</h2>
+            </div>
+            <button class="btn-secondary btn-pill" onclick="location.href='transactions.html'">К журналу</button>
+          </div>
+          <div class="panel-body">
             <canvas
               id="expenseChart"
               width="600"
-              height="300"
-              aria-label="График расходов"
+              height="320"
+              aria-label="Динамика расходов"
               role="img"
             ></canvas>
           </div>
         </article>
 
-        <article class="card card--wide">
-          <div class="card-header">
+        <article class="panel panel--split">
+          <div class="panel-header">
             <div>
-              <h2>Структура расходов</h2>
-              <p class="card-subtitle">Узнайте, какие категории тянут бюджет вниз</p>
+              <p class="muted-label">Структура расходов</p>
+              <h2>Категории месяца</h2>
             </div>
             <a class="link-ghost" href="categories.html">Управлять категориями →</a>
           </div>
-          <div class="chart-container chart-container--split">
+          <div class="panel-body panel-body--split">
             <canvas
               id="expensePie"
-              width="300"
-              height="300"
+              width="320"
+              height="320"
               aria-label="Круговая диаграмма расходов"
               role="img"
             ></canvas>
             <div class="top-list">
-              <h3>Топ расходов</h3>
+              <p class="muted-label">Топ расходов</p>
               <ul id="topCategories" class="list-compact">
                 <li>Нет данных</li>
               </ul>
@@ -241,57 +269,82 @@
         </article>
       </section>
 
-      <section class="insight-grid">
-        <article class="card">
-          <div class="card-header">
+      <section class="dashboard-secondary">
+        <article class="panel panel--assistant">
+          <div class="panel-header">
             <div>
-              <h2>AI-прогноз (30 дней)</h2>
-              <p class="card-subtitle">Ключевые показатели в валюте баланса</p>
+              <p class="muted-label">AI ассистент</p>
+              <h2>Прогноз на 30 дней</h2>
             </div>
             <span class="pill pill--accent">Beta</span>
           </div>
           <div class="ai-grid">
             <div>
-              <p class="muted-label">Доход</p>
+              <p class="muted-label">Доходы</p>
               <p class="ai-value">
                 <strong id="aiIncome">0.00</strong>
                 <span class="currency-code">USD</span>
               </p>
             </div>
             <div>
-              <p class="muted-label">Расход</p>
+              <p class="muted-label">Расходы</p>
               <p class="ai-value">
                 <strong id="aiExpense">0.00</strong>
                 <span class="currency-code">USD</span>
               </p>
             </div>
           </div>
-          <p class="card-note">Алгоритм анализирует тренды операций и уведомит, если траты выходят за рамки бюджета.</p>
+          <p class="panel-note">Модель анализирует прошлые операции и бюджеты, чтобы дать прозрачный прогноз экономии.</p>
         </article>
 
-        <article class="card">
-          <div class="card-header">
+        <article class="panel panel--targets">
+          <div class="panel-header">
             <div>
-              <h2>Напоминания</h2>
-              <p class="card-subtitle">Подключите банковские связи, чтобы получать больше инсайтов</p>
+              <p class="muted-label">Бюджеты</p>
+              <h2>Контроль лимитов</h2>
+            </div>
+            <button class="btn-ghost" onclick="location.href='budgets.html'">Открыть бюджеты</button>
+          </div>
+          <div class="targets-body">
+            <p class="targets-value" id="dashboardPlanValue">0 / 0</p>
+            <div class="progress-track">
+              <span class="progress-value" id="dashboardPlanProgressLabel">0%</span>
+              <div class="progress-bar progress-bar--elevated">
+                <span id="dashboardPlanProgress" style="width:0%"></span>
+              </div>
+            </div>
+            <p class="hero-note" id="dashboardPlanHint">Добавьте бюджет, чтобы отслеживать прогресс автоматически.</p>
+          </div>
+        </article>
+
+        <article class="panel panel--feed">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Активность</p>
+              <h2>Лента действий</h2>
             </div>
           </div>
-          <ul class="list-reminders">
+          <ul class="feed-list">
             <li>
-              <span class="pill pill--warning">Счета</span>
               <div>
-                <p class="reminder-title">Добавьте хотя бы один бюджет</p>
-                <p class="reminder-meta">Это поможет AI точнее прогнозировать траты.</p>
+                <p class="feed-title">Синхронизированы последние операции</p>
+                <p class="feed-meta">2 минуты назад • API банка «Альфа»</p>
               </div>
-              <button class="link-ghost" onclick="location.href='budgets.html'">Открыть</button>
+              <button class="link-ghost" onclick="location.href='transactions.html'">Смотреть</button>
             </li>
             <li>
-              <span class="pill pill--neutral">Цели</span>
               <div>
-                <p class="reminder-title">Назначьте цель накоплений</p>
-                <p class="reminder-meta">Следите за прогрессом прямо в дэшборде.</p>
+                <p class="feed-title">Порог расходов в категории «Жильё» достигнут 75%</p>
+                <p class="feed-meta">Сегодня • Автоуведомление</p>
               </div>
-              <button class="link-ghost" onclick="location.href='goals.html'">Создать</button>
+              <button class="link-ghost" onclick="location.href='categories.html'">Настроить</button>
+            </li>
+            <li>
+              <div>
+                <p class="feed-title">Доступен новый отчёт о подписках</p>
+                <p class="feed-meta">Вчера • Аналитика FinTrackr</p>
+              </div>
+              <button class="link-ghost" onclick="location.href='subscriptions.html'">Открыть</button>
             </li>
           </ul>
         </article>

@@ -148,6 +148,7 @@ function computeWorkspaceMetrics(collections) {
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const balanceCurrency = getBalanceCurrency();
   let totalBalance = 0;
+  const accountsCount = collections.accounts.length;
   collections.accounts.forEach((account) => {
     const balance = convertAmount(
       Number(account.balance) || 0,
@@ -187,6 +188,7 @@ function computeWorkspaceMetrics(collections) {
     budgetSpent,
     monthLabel: formatMonthLabel(now),
     planTitle: activePlan ? activePlan.title : "Free",
+    accountsCount,
   };
 }
 
@@ -245,6 +247,7 @@ async function hydrateWorkspaceShell(user) {
     const metrics = computeWorkspaceMetrics(collections);
     updateHeaderMetrics(metrics);
     updateSidebarSnapshot(user, metrics);
+    updateDashboardHighlight(user, metrics);
   } catch (error) {
     console.error("Не удалось обновить состояние личного кабинета", error);
   }
@@ -440,6 +443,67 @@ function setHeaderStatText(valueId, metaId, value, meta, trendClass) {
     if (trendClass) {
       metaEl.classList.add(trendClass);
     }
+  }
+}
+
+function updateDashboardHighlight(user, metrics) {
+  const heroName = document.getElementById("heroUserName");
+  if (heroName) {
+    heroName.textContent = user?.name ? user.name.split(" ")[0] : "друг";
+  }
+  const heroPeriod = document.getElementById("heroPeriodLabel");
+  if (heroPeriod) {
+    heroPeriod.textContent = metrics.monthLabel;
+  }
+  const heroPlan = document.getElementById("heroPlanLabel");
+  if (heroPlan) {
+    heroPlan.textContent =
+      metrics.planTitle && metrics.planTitle !== "Free" ? metrics.planTitle : "Базовый план";
+  }
+  const heroBalanceValue = document.getElementById("heroBalanceValue");
+  if (heroBalanceValue) {
+    heroBalanceValue.textContent = metrics.totalBalance.toFixed(2);
+  }
+  const heroBalanceCurrency = document.getElementById("heroBalanceCurrency");
+  if (heroBalanceCurrency) {
+    heroBalanceCurrency.textContent = metrics.balanceCurrency;
+  }
+  const heroBalanceHint = document.getElementById("heroBalanceHint");
+  if (heroBalanceHint) {
+    if (metrics.accountsCount) {
+      heroBalanceHint.textContent = `Счета: ${metrics.accountsCount}`;
+    } else {
+      heroBalanceHint.textContent = "Добавьте первый счёт";
+    }
+  }
+
+  const planValue = document.getElementById("dashboardPlanValue");
+  if (planValue) {
+    if (metrics.budgetLimit > 0) {
+      planValue.textContent = `${metrics.budgetSpent.toFixed(0)} / ${metrics.budgetLimit.toFixed(
+        0
+      )} ${metrics.balanceCurrency}`;
+    } else {
+      planValue.textContent = `${metrics.monthExpense.toFixed(0)} ${metrics.balanceCurrency}`;
+    }
+  }
+  const planHint = document.getElementById("dashboardPlanHint");
+  if (planHint) {
+    planHint.textContent = metrics.budgetLimit
+      ? "Все бюджеты активны и обновляются автоматически"
+      : "Добавьте бюджет, чтобы отслеживать прогресс автоматически.";
+  }
+  const planProgressBar = document.getElementById("dashboardPlanProgress");
+  const planProgressLabel = document.getElementById("dashboardPlanProgressLabel");
+  const progress = metrics.budgetLimit
+    ? Math.min(100, Math.round((metrics.budgetSpent / metrics.budgetLimit) * 100))
+    : Math.min(100, Math.round((metrics.monthExpense / Math.max(metrics.totalBalance, 1)) * 100));
+  const safeProgress = Number.isFinite(progress) ? progress : 0;
+  if (planProgressBar) {
+    planProgressBar.style.width = `${safeProgress}%`;
+  }
+  if (planProgressLabel) {
+    planProgressLabel.textContent = `${safeProgress}%`;
   }
 }
 
