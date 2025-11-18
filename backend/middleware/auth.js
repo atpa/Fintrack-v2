@@ -27,8 +27,9 @@ function authenticateRequest(req, res, next) {
 
   try {
     const payload = jwt.verify(accessToken, ENV.JWT_SECRET);
+    const uid = payload.userId || payload.sub;
     req.user = {
-      userId: payload.userId,
+      userId: uid,
       email: payload.email
     };
     return next();

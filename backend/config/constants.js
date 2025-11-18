@@ -18,7 +18,8 @@ const getJwtSecret = () => {
     return "test-secret";
   }
 
-  throw new Error("JWT_SECRET environment variable is required. Set a strong secret in .env");
+  console.warn("SECURITY WARNING: Falling back to default JWT secret for local development. Set JWT_SECRET in .env before production.");
+  return "dev-secret-change";
 };
 
 const ENV = {

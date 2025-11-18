@@ -563,7 +563,126 @@ function getData() {
  */
 function setData(data) {
   console.warn('setData() is deprecated with SQLite. Use individual insert functions.');
-  // This is mainly for test compatibility
+
+  if (!ENV.DISABLE_PERSIST) {
+    return;
+  }
+
+  const db = initDB();
+
+  db.exec('PRAGMA foreign_keys = OFF;');
+  const tables = [
+    'transactions',
+    'accounts',
+    'categories',
+    'budgets',
+    'goals',
+    'planned',
+    'subscriptions',
+    'rules',
+    'recurring',
+    'bank_connections',
+    'refresh_tokens',
+    'token_blacklist',
+    'sessions',
+    'users'
+  ];
+
+  const transaction = db.transaction(() => {
+    tables.forEach((table) => {
+      db.prepare(`DELETE FROM ${table}`).run();
+    });
+
+    const userStmt = db.prepare('INSERT INTO users (id, name, email, password_hash) VALUES (@id, @name, @email, @password_hash)');
+    const users = Array.isArray(data.users) && data.users.length > 0
+      ? data.users
+      : [{ id: 1, name: 'Seed User', email: 'seed@example.com', password_hash: 'placeholder' }];
+    users.forEach((user) => userStmt.run(user));
+
+    const accountStmt = db.prepare('INSERT INTO accounts (id, user_id, name, currency, balance) VALUES (@id, @user_id, @name, @currency, @balance)');
+    (data.accounts || []).forEach((account) => accountStmt.run(account));
+
+    const categoryStmt = db.prepare('INSERT INTO categories (id, user_id, name, kind) VALUES (@id, @user_id, @name, @kind)');
+    (data.categories || []).forEach((category) => categoryStmt.run(category));
+
+    const budgetStmt = db.prepare('INSERT INTO budgets (id, user_id, category_id, month, limit_amount, spent, type, percent, currency) VALUES (@id, @user_id, @category_id, @month, @limit_amount, @spent, @type, @percent, @currency)');
+    (data.budgets || []).forEach((budget) => budgetStmt.run({
+      ...budget,
+      limit_amount: budget.limit,
+    }));
+
+    const transactionStmt = db.prepare('INSERT INTO transactions (id, user_id, account_id, category_id, type, amount, currency, date, note) VALUES (@id, @user_id, @account_id, @category_id, @type, @amount, @currency, @date, @note)');
+    (data.transactions || []).forEach((txn) => transactionStmt.run(txn));
+
+    const goalStmt = db.prepare('INSERT INTO goals (id, user_id, title, target_amount, current_amount, deadline) VALUES (@id, @user_id, @title, @target_amount, @current_amount, @deadline)');
+    (data.goals || []).forEach((goal) => goalStmt.run(goal));
+
+    const plannedStmt = db.prepare('INSERT INTO planned (id, user_id, account_id, category_id, type, amount, currency, start_date, frequency, note) VALUES (@id, @user_id, @account_id, @category_id, @type, @amount, @currency, @start_date, @frequency, @note)');
+    (data.planned || []).forEach((plan) => plannedStmt.run(plan));
+
+    if ((data.subscriptions || []).length > 0) {
+      const subscriptionStmt = db.prepare('INSERT INTO subscriptions (id, user_id, title, amount, currency, frequency, next_date) VALUES (@id, @user_id, @title, @amount, @currency, @frequency, @next_date)');
+      data.subscriptions.forEach((sub) => subscriptionStmt.run(sub));
+    }
+
+    if ((data.rules || []).length > 0) {
+      const rulesStmt = db.prepare('INSERT INTO rules (id, user_id, pattern, category_id, confidence) VALUES (@id, @user_id, @pattern, @category_id, @confidence)');
+      data.rules.forEach((rule) => rulesStmt.run(rule));
+    }
+
+    if ((data.recurring || []).length > 0) {
+      const recurringStmt = db.prepare('INSERT INTO recurring (id, user_id, name, amount, frequency) VALUES (@id, @user_id, @name, @amount, @frequency)');
+      data.recurring.forEach((rec) => recurringStmt.run(rec));
+    }
+
+    const refreshStmt = db.prepare('INSERT INTO refresh_tokens (id, user_id, token, expires_at) VALUES (@id, @user_id, @token, @expires_at)');
+    (data.refreshTokens || []).forEach((token) => refreshStmt.run({
+      id: token.id,
+      user_id: token.user_id,
+      token: token.token || token,
+      expires_at: token.expires_at || Date.now() + 3600_000,
+    }));
+
+    const blacklistStmt = db.prepare('INSERT INTO token_blacklist (token) VALUES (@token)');
+    (data.tokenBlacklist || []).forEach((entry) => blacklistStmt.run({
+      token: entry.token || entry,
+    }));
+  });
+
+  transaction();
+  db.exec('PRAGMA foreign_keys = ON;');
+}
+
+function migrateSeedDataToUser(targetUserId) {
+  if (!ENV.DISABLE_PERSIST || !targetUserId || targetUserId === 1) {
+    return;
+  }
+
+  const db = initDB();
+  const seedExists = db.prepare('SELECT 1 FROM users WHERE id = 1').get();
+  if (!seedExists) return;
+
+  const tablesWithUserId = [
+    'accounts',
+    'categories',
+    'transactions',
+    'budgets',
+    'goals',
+    'planned',
+    'subscriptions',
+    'rules',
+    'recurring',
+    'sessions'
+  ];
+
+  const migrate = db.transaction(() => {
+    tablesWithUserId.forEach((table) => {
+      db.prepare(`UPDATE ${table} SET user_id = ? WHERE user_id = 1`).run(targetUserId);
+    });
+    db.prepare('DELETE FROM users WHERE id = 1').run();
+  });
+
+  migrate();
 }
 
 function persistData() {
@@ -654,6 +773,7 @@ module.exports = {
   // Legacy compatibility (deprecated)
   getData,
   setData,
+  migrateSeedDataToUser,
   persistData,
   getNextId,
   defaultUserId: 1 // Deprecated

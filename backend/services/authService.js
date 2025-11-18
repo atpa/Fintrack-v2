@@ -89,8 +89,10 @@ function issueTokensForUser(user) {
   const data = getData();
   const now = Date.now();
 
+  const tokenPayload = { sub: user.id, userId: user.id, email: user.email };
+
   const accessToken = jwt.sign(
-    { sub: user.id, email: user.email },
+    tokenPayload,
     ENV.JWT_SECRET,
     {
       expiresIn: TOKEN_CONFIG.ACCESS_TTL_SECONDS,
@@ -99,7 +101,7 @@ function issueTokensForUser(user) {
   );
 
   const refreshToken = jwt.sign(
-    { sub: user.id, email: user.email },
+    tokenPayload,
     ENV.JWT_SECRET,
     {
       expiresIn: TOKEN_CONFIG.REFRESH_TTL_SECONDS,
