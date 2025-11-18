@@ -7,7 +7,14 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ENV, TOKEN_CONFIG } = require("../config/constants");
-const { getData, persistData } = require("./dataService");
+const {
+  getData,
+  createRefreshToken,
+  deleteRefreshToken,
+  deleteExpiredRefreshTokens,
+  isTokenBlacklisted: isTokenBlacklistedDB,
+  addTokenToBlacklist: addTokenToBlacklistDB,
+} = require("./dataService");
 
 /**
  * Parse cookies from request headers
@@ -86,7 +93,6 @@ function sanitizeUser(user) {
  * Issue JWT tokens for user
  */
 function issueTokensForUser(user) {
-  const data = getData();
   const now = Date.now();
 
   const tokenPayload = { sub: user.id, userId: user.id, email: user.email };
@@ -109,13 +115,8 @@ function issueTokensForUser(user) {
     }
   );
 
-  data.refreshTokens.push({
-    token: refreshToken,
-    userId: user.id,
-    expiresAt: now + TOKEN_CONFIG.REFRESH_TTL_SECONDS * 1000,
-  });
-
-  persistData();
+  const refreshExpiresAt = now + TOKEN_CONFIG.REFRESH_TTL_SECONDS * 1000;
+  createRefreshToken(user.id, refreshToken, refreshExpiresAt);
   return { accessToken, refreshToken };
 }
 
@@ -123,62 +124,28 @@ function issueTokensForUser(user) {
  * Consume refresh token (remove from storage)
  */
 function consumeRefreshToken(token) {
-  const data = getData();
-  const index = data.refreshTokens.findIndex((entry) => entry.token === token);
-  if (index >= 0) {
-    data.refreshTokens.splice(index, 1);
-    persistData();
-  }
+  deleteRefreshToken(token);
 }
 
 /**
  * Check if token is blacklisted
  */
 function isTokenBlacklisted(token) {
-  const data = getData();
-  return data.tokenBlacklist.some((entry) => entry.token === token);
+  return isTokenBlacklistedDB(token);
 }
 
 /**
  * Add token to blacklist
  */
 function addTokenToBlacklist(token, expiresAt) {
-  const data = getData();
-  if (!expiresAt) {
-    try {
-      const decoded = jwt.decode(token);
-      expiresAt = decoded.exp ? decoded.exp * 1000 : Date.now() + 3600000;
-    } catch (e) {
-      expiresAt = Date.now() + 3600000;
-    }
-  }
-  data.tokenBlacklist.push({ token, expiresAt });
-  persistData();
+  addTokenToBlacklistDB(token);
 }
 
 /**
  * Cleanup expired tokens from storage
  */
 function cleanupTokenStores() {
-  const data = getData();
-  const now = Date.now();
-  const refreshBefore = data.refreshTokens.length;
-  const blacklistBefore = data.tokenBlacklist.length;
-
-  data.refreshTokens = data.refreshTokens.filter(
-    (entry) => entry && entry.expiresAt && entry.expiresAt > now
-  );
-
-  data.tokenBlacklist = data.tokenBlacklist.filter(
-    (entry) => entry && entry.expiresAt && entry.expiresAt > now
-  );
-
-  if (
-    refreshBefore !== data.refreshTokens.length ||
-    blacklistBefore !== data.tokenBlacklist.length
-  ) {
-    persistData();
-  }
+  deleteExpiredRefreshTokens();
 }
 
 /**
