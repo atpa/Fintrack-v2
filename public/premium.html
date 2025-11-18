@@ -7,20 +7,89 @@
   <link rel="stylesheet" href="css/design-system.css" />
   <link rel="stylesheet" href="css/style.css" />
   <script defer src="js/utils/auth.js"></script>
+  <script defer src="js/app.js"></script>
   <script defer src="js/premium.js"></script>
 </head>
-<body>
+<body class="workspace-page" data-page-title="Премиум" data-page-subtitle="Расширенные функции и поддержка для роста">
   <header>
     <div class="brand visually-hidden">
       <a href="dashboard.html">FinTrackr</a>
     </div>
     <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
-
+  </header>
 
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Боковая навигация">
-     <!-- sidebar-top removed: logo moved to header; sidebar starts at header edge -->
+    <!-- sidebar-top removed: logo moved to header; sidebar starts at header edge -->
     <div class="sidebar-scroll">
-  </header>
+      <nav class="sidebar-nav" aria-label="Меню приложения">
+        <div class="nav-section">
+          <h3 class="nav-section-title">Основное</h3>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="accounts.html" class="nav-link"><span class="nav-icon">💳</span><span class="nav-label">Счета</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="transactions.html" class="nav-link"><span class="nav-icon">↔️</span><span class="nav-label">Операции</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="categories.html" class="nav-link"><span class="nav-icon">🗂️</span><span class="nav-label">Категории</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <h3 class="nav-section-title">Планирование</h3>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="planned.html" class="nav-link"><span class="nav-icon">📆</span><span class="nav-label">Планирование</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="recurring.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Подписки</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <h3 class="nav-section-title">Аналитика</h3>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="reports.html" class="nav-link"><span class="nav-icon">📈</span><span class="nav-label">Отчёты</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="forecast.html" class="nav-link"><span class="nav-icon">📐</span><span class="nav-label">Прогнозы</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="rules.html" class="nav-link"><span class="nav-icon">⚙️</span><span class="nav-label">Правила</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <h3 class="nav-section-title">Справка</h3>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="education.html" class="nav-link"><span class="nav-icon">📚</span><span class="nav-label">Обучение</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="premium.html" class="nav-link"><span class="nav-icon">⭐</span><span class="nav-label">Премиум</span></a>
+            </li>
+            <li class="nav-item">
+              <a href="settings.html" class="nav-link"><span class="nav-icon">⚙️</span><span class="nav-label">Настройки</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
   <main>
     <section class="card">
       <h2>Премиум‑подписка</h2>

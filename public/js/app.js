@@ -93,6 +93,20 @@ function convertAmount(amount, from, to) {
   return Number(amount) || 0;
 }
 
+function formatCompactCurrency(amount, currency) {
+  const safeValue = Number(amount) || 0;
+  try {
+    return new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: currency || "USD",
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(safeValue);
+  } catch (error) {
+    return formatCurrency(safeValue, currency);
+  }
+}
+
 const workspaceDataState = {
   collectionsPromise: null,
 };
@@ -378,8 +392,55 @@ function getUserInitials(name) {
 function isWorkspacePage() {
   const body = document.body;
   if (!body) return false;
-  return body.classList.contains("workspace-page") || 
-         (!body.classList.contains("landing-page") && !body.classList.contains("auth-page"));
+  return (
+    body.classList.contains("workspace-page") ||
+    (!body.classList.contains("landing-page") &&
+      !body.classList.contains("auth-page"))
+  );
+}
+
+let headerHeightResizeBound = false;
+
+function syncHeaderHeightVariable() {
+  const headerEl = document.querySelector("header.app-header");
+  if (!headerEl || !document.documentElement) return;
+  const measured = Math.ceil(headerEl.offsetHeight || 0);
+  if (!measured) return;
+  document.documentElement.style.setProperty("--header-h", `${measured}px`);
+}
+
+function ensureHeaderHeightListener() {
+  if (headerHeightResizeBound) return;
+  headerHeightResizeBound = true;
+  window.addEventListener("resize", () => {
+    window.requestAnimationFrame(syncHeaderHeightVariable);
+  });
+}
+
+function updateHeaderSyncLabel() {
+  const syncLabel = document.getElementById("headerSyncLabel");
+  if (!syncLabel) return;
+  const now = new Date();
+  const timeString = now.toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  syncLabel.textContent = `Обновлено ${timeString}`;
+}
+
+function setHeaderStatText(valueId, metaId, value, meta, trendClass) {
+  const valueEl = document.getElementById(valueId);
+  if (valueEl) {
+    valueEl.textContent = value;
+  }
+  const metaEl = document.getElementById(metaId);
+  if (metaEl) {
+    metaEl.textContent = meta;
+    metaEl.classList.remove("trend-up", "trend-down", "trend-neutral");
+    if (trendClass) {
+      metaEl.classList.add(trendClass);
+    }
+  }
 }
 
 function renderAppHeader(user) {
@@ -400,52 +461,104 @@ function renderAppHeader(user) {
     (document.body && document.body.dataset.pageSubtitle) ||
     "Прогнозы, бюджеты и уведомления в едином месте";
 
-    header.classList.add("app-header");
-    header.dataset.enhanced = "true";
-    header.innerHTML = `
-      <div class="header-inner">
-        <div class="header-left">
+  header.classList.add("app-header");
+  header.dataset.enhanced = "true";
+  header.innerHTML = `
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="header-brand">
           <button class="burger" aria-label="Меню" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
-          <div class="header-pills header-pills--left" role="tablist" aria-label="Период">
-            <button class="header-pill" type="button">Сводка недели</button>
-            <button class="header-pill header-pill--muted" type="button">AI советчик</button>
+          <div class="header-brand-meta">
+            <span class="header-eyebrow header-eyebrow--ghost">Рабочее пространство</span>
+            <div class="header-brand-line">
+              <span class="header-brand-title">FinTrackr One</span>
+              <span class="header-badge-soft">Live</span>
+            </div>
+            <p class="header-sync">
+              <span class="sync-dot" aria-hidden="true"></span>
+              <span id="headerSyncLabel">Синхронизация...</span>
+            </p>
           </div>
         </div>
-        <div class="header-center">
-          <div class="header-title-wrap">
-            <h1 class="header-title">${pageTitle}</h1>
-          </div>
-          <p class="header-subtitle">${pageSubtitle}</p>
-        </div>
-        <div class="header-right">
+        <div class="header-actions">
           <label class="header-search" aria-label="Поиск по данным FinTrackr">
             <span class="header-search-icon">🔍</span>
             <input type="search" placeholder="Поиск по операциям, счетам и категориям" />
           </label>
-          <span class="header-pill header-pill--muted" id="headerCurrencyChip">Валюта: USD</span>
-          <a href="planned.html" class="header-quick" aria-label="Планирование">Планы</a>
-          <a href="transactions.html#new" class="header-primary" aria-label="Добавить операцию">+ Операция</a>
-          <button class="header-icon" type="button" aria-label="Уведомления">
-            <span class="header-icon-dot"></span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-              <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6v-5a6 6 0 0 0-4-5.66V4a2 2 0 1 0-4 0v1.34A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z" fill="currentColor" />
-            </svg>
-          </button>
-          <div class="header-profile" id="headerProfile" aria-haspopup="menu" aria-expanded="false">
-            <div class="profile-avatar-sm" id="headerAvatar">👤</div>
-            <div class="header-dropdown" id="headerDropdown" role="menu" hidden>
-              <div class="header-dropdown-info">
-                <p class="header-profile-name" id="headerProfileName">Гость</p>
-                <p class="header-profile-email" id="headerProfileEmail">Войдите, чтобы синхронизировать</p>
+          <div class="header-actions-row">
+            <div class="header-chips">
+              <button class="header-chip header-chip--ghost" type="button">AI советчик</button>
+              <span class="header-chip header-chip--muted" id="headerCurrencyChip">Валюта: USD</span>
+            </div>
+            <a href="planned.html" class="header-quick" aria-label="Планирование">Планы</a>
+            <a href="transactions.html#new" class="header-primary" aria-label="Добавить операцию">+ Операция</a>
+            <button class="header-icon" type="button" aria-label="Уведомления">
+              <span class="header-icon-dot"></span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6v-5a6 6 0 0 0-4-5.66V4a2 2 0 1 0-4 0v1.34A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z" fill="currentColor" />
+              </svg>
+            </button>
+            <div class="header-profile" id="headerProfile" aria-haspopup="menu" aria-expanded="false">
+              <div class="profile-avatar-sm" id="headerAvatar">👤</div>
+              <div class="header-dropdown" id="headerDropdown" role="menu" hidden>
+                <div class="header-dropdown-info">
+                  <p class="header-profile-name" id="headerProfileName">Гость</p>
+                  <p class="header-profile-email" id="headerProfileEmail">Войдите, чтобы синхронизировать</p>
+                </div>
+                <button type="button" class="dropdown-item" id="headerLogoutBtn">Выход</button>
               </div>
-              <button type="button" class="dropdown-item" id="headerLogoutBtn">Выход</button>
             </div>
           </div>
         </div>
       </div>
-    `;
+      <div class="header-bottom">
+        <div class="header-page">
+          <div class="header-page-head">
+            <div>
+              <div class="header-title-wrap">
+                <h1 class="header-title">${pageTitle}</h1>
+                <span class="header-chip header-chip--gradient">Focus</span>
+              </div>
+              <p class="header-subtitle">${pageSubtitle}</p>
+            </div>
+            <div class="header-pills header-pills--inline" role="tablist" aria-label="Период">
+              <button class="header-pill" type="button">Неделя</button>
+              <button class="header-pill header-pill--muted" type="button">Месяц</button>
+              <button class="header-pill header-pill--ghost" type="button">AI прогноз</button>
+            </div>
+          </div>
+        </div>
+        <div class="header-stats" id="headerStats" aria-live="polite">
+          <article class="header-stat-card">
+            <p class="header-stat-label">Консолидированный баланс</p>
+            <p class="header-stat-value" id="headerStatBalance">—</p>
+            <p class="header-stat-trend trend-up" id="headerStatBalanceMeta">Синхронизация...</p>
+          </article>
+          <article class="header-stat-card">
+            <p class="header-stat-label">Расходы месяца</p>
+            <p class="header-stat-value" id="headerStatExpenses">—</p>
+            <p class="header-stat-trend trend-down" id="headerStatExpensesMeta">Нет данных</p>
+          </article>
+          <article class="header-stat-card">
+            <p class="header-stat-label">Регулярные платежи</p>
+            <p class="header-stat-value" id="headerStatRecurring">—</p>
+            <p class="header-stat-trend trend-neutral" id="headerStatRecurringMeta">Нет данных</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  `;
+
+  updateHeaderSyncLabel();
+  requestAnimationFrame(() => {
+    syncHeaderHeightVariable();
+    ensureHeaderHeightListener();
+  });
+  hydrateHeaderStats().catch((error) => {
+    console.error("Не удалось обновить показатели в шапке", error);
+  });
 
   const currencyChip = document.getElementById("headerCurrencyChip");
   if (currencyChip) {
@@ -517,6 +630,92 @@ function renderAppHeader(user) {
         new CustomEvent("fintrackr:search", { detail })
       );
     });
+  }
+}
+
+async function hydrateHeaderStats() {
+  const statsRoot = document.getElementById("headerStats");
+  if (!statsRoot) return;
+  try {
+    const collections = await loadWorkspaceCollections();
+    const baseCurrency = getBalanceCurrency();
+    const accounts = Array.isArray(collections.accounts)
+      ? collections.accounts
+      : [];
+    const transactions = Array.isArray(collections.transactions)
+      ? collections.transactions
+      : [];
+    const subscriptions = Array.isArray(collections.subscriptions)
+      ? collections.subscriptions
+      : [];
+
+    const totalBalance = accounts.reduce((sum, account) => {
+      const currency = (account?.currency || baseCurrency || "USD").toUpperCase();
+      const balanceValue =
+        Number(account?.balance ?? account?.amount ?? 0) || 0;
+      return sum + convertAmount(balanceValue, currency, baseCurrency);
+    }, 0);
+
+    setHeaderStatText(
+      "headerStatBalance",
+      "headerStatBalanceMeta",
+      accounts.length ? formatCompactCurrency(totalBalance, baseCurrency) : "—",
+      accounts.length
+        ? `Счета: ${accounts.length}`
+        : "Добавьте первый счёт",
+      accounts.length ? "trend-up" : "trend-neutral"
+    );
+
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthlyExpenseTx = transactions.filter((tx) => {
+      if (!tx || tx.type !== "expense") return false;
+      if (!tx.date) return false;
+      const txDate = new Date(tx.date);
+      return !Number.isNaN(txDate.getTime()) && txDate >= monthStart;
+    });
+    const monthlyExpenses = monthlyExpenseTx.reduce((sum, tx) => {
+      const currency = (tx?.currency || baseCurrency || "USD").toUpperCase();
+      const value = Number(tx?.amount ?? 0) || 0;
+      return sum + convertAmount(value, currency, baseCurrency);
+    }, 0);
+    const expenseRatio = totalBalance
+      ? Math.min(999, (monthlyExpenses / totalBalance) * 100)
+      : 0;
+    setHeaderStatText(
+      "headerStatExpenses",
+      "headerStatExpensesMeta",
+      monthlyExpenseTx.length
+        ? formatCompactCurrency(monthlyExpenses, baseCurrency)
+        : "—",
+      monthlyExpenseTx.length
+        ? `${monthlyExpenseTx.length} операций · ${expenseRatio.toFixed(1)}%`
+        : "Нет расходов в этом месяце",
+      expenseRatio > 45 ? "trend-down" : "trend-up"
+    );
+
+    const recurringTotal = subscriptions.reduce((sum, sub) => {
+      const currency = (sub?.currency || baseCurrency || "USD").toUpperCase();
+      const value = Number(sub?.amount ?? 0) || 0;
+      return sum + convertAmount(value, currency, baseCurrency);
+    }, 0);
+    setHeaderStatText(
+      "headerStatRecurring",
+      "headerStatRecurringMeta",
+      subscriptions.length
+        ? formatCompactCurrency(recurringTotal, baseCurrency)
+        : "—",
+      subscriptions.length
+        ? `${subscriptions.length} подпис${subscriptions.length === 1 ? "ка" : "ки"}`
+        : "Нет активных подписок",
+      subscriptions.length ? "trend-neutral" : "trend-up"
+    );
+
+    updateHeaderSyncLabel();
+  } catch (error) {
+    console.error("Header stats update failed", error);
+  } finally {
+    requestAnimationFrame(syncHeaderHeightVariable);
   }
 }
 
