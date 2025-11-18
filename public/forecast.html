@@ -3,191 +3,152 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinTrackr – Прогноз</title>
+    <title>FinTrackr - Прогноз</title>
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
     <script defer src="js/forecast.js"></script>
   </head>
-  <body class="workspace-page" data-page-title="Прогнозы" data-page-subtitle="Планируйте сценарии доходов и расходов">
+  <body class="workspace-page" data-page-title="Прогноз" data-page-subtitle="Предсказания по доходам и расходам">
     <header>
       <div class="brand visually-hidden">
         <a href="dashboard.html">FinTrackr</a>
       </div>
-      <button class="burger" aria-label="Меню">
-        <span></span><span></span><span></span>
-      </button>
+      <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
     </header>
 
-    <aside
-      class="sidebar"
-      id="sidebar"
-      role="navigation"
-      aria-label="Боковая навигация"
-    >
-      <!-- sidebar-top removed: profile/auth moved to header dropdown -->
-
-    <div class="sidebar-scroll">
-      <nav class="sidebar-nav" aria-label="Меню приложения">
-        <div class="nav-section">
-          <h3 class="nav-section-title">Основное</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="dashboard.html" class="nav-link"
-                ><span class="nav-icon">🏠</span
-                ><span class="nav-label">Дэшборд</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="accounts.html" class="nav-link"
-                ><span class="nav-icon">💼</span
-                ><span class="nav-label">Счёта</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="transactions.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Операции</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="categories.html" class="nav-link"
-                ><span class="nav-icon">🔖</span
-                ><span class="nav-label">Категории</span></a
-              >
-            </li>
-          </ul>
-        </div>
-
-        <div class="nav-section">
-          <h3 class="nav-section-title">Планирование</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="budgets.html" class="nav-link"
-                ><span class="nav-icon">📊</span
-                ><span class="nav-label">Бюджеты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="goals.html" class="nav-link"
-                ><span class="nav-icon">🎯</span
-                ><span class="nav-label">Цели</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="planned.html" class="nav-link"
-                ><span class="nav-icon">📅</span
-                ><span class="nav-label">Планируемые</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="recurring.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Регулярные</span></a
-              >
-            </li>
-          </ul>
-        </div>
-
-        <div class="nav-section">
-          <h3 class="nav-section-title">Аналитика</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="reports.html" class="nav-link"
-                ><span class="nav-icon">📈</span
-                ><span class="nav-label">Отчёты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="forecast.html" class="nav-link"
-                ><span class="nav-icon">🔮</span
-                ><span class="nav-label">Прогнозы</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="rules.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Правила</span></a
-              >
-            </li>
-          </ul>
-        </div>
-
-        <div class="nav-section">
-          <h3 class="nav-section-title">Дополнительно</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="education.html" class="nav-link"
-                ><span class="nav-icon">📚</span
-                ><span class="nav-label">Обучение</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="premium.html" class="nav-link"
-                ><span class="nav-icon">⭐</span
-                ><span class="nav-label">Премиум</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="settings.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Настройки</span></a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Основная навигация">
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="Разделы приложения">
+          <div class="nav-section">
+            <h3 class="nav-section-title">Основные</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a></li>
+              <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">💼</span><span class="nav-label">Счета</span></a></li>
+              <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">↔</span><span class="nav-label">Операции</span></a></li>
+              <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">🏷</span><span class="nav-label">Категории</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Финансовые</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a></li>
+              <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a></li>
+              <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">🗓</span><span class="nav-label">Планируемые</span></a></li>
+              <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Регулярные</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Аналитика</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="reports.html" class="nav-link"><span class="nav-icon">📈</span><span class="nav-label">Отчёты</span></a></li>
+              <li class="nav-item"><a href="forecast.html" class="nav-link"><span class="nav-icon">📉</span><span class="nav-label">Прогноз</span></a></li>
+              <li class="nav-item"><a href="rules.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Правила</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Сервисы</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="education.html" class="nav-link"><span class="nav-icon">📚</span><span class="nav-label">Обучение</span></a></li>
+              <li class="nav-item"><a href="premium.html" class="nav-link"><span class="nav-icon">⭐</span><span class="nav-label">Премиум</span></a></li>
+              <li class="nav-item"><a href="settings.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Настройки</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main>
-      <section class="card">
-        <h2>Прогноз на 7, 30 и 90 дней</h2>
-        <p>
-          Используя ваши последние операции, мы прогнозируем доходы и расходы на
-          разные горизонты. Значения рассчитываются исходя из средней дневной
-          активности за последний месяц.
-        </p>
-        <div class="grid-3 forecast-summary">
-          <div class="forecast-box">
-            <h3>7 дней</h3>
-            <p>Доход: <strong id="forecastIncome7">0.00</strong> USD</p>
-            <p>Расход: <strong id="forecastExpense7">0.00</strong> USD</p>
+
+    <main class="workspace-main workspace-shell" role="main" aria-label="Раздел прогнозов">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Прогноз</p>
+            <h1>Загляните в будущие периоды</h1>
+            <p class="hero-description">
+              На основе транзакций система рассчитывает доходы и расходы на ближайшие 7, 30 и 90 дней.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="forecastHeroCurrency">Валюта: —</span>
+              <span class="hero-pill hero-pill--soft" id="forecastHeroTrend">Тренд: —</span>
+            </div>
           </div>
-          <div class="forecast-box">
-            <h3>30 дней</h3>
-            <p>Доход: <strong id="forecastIncome30">0.00</strong> USD</p>
-            <p>Расход: <strong id="forecastExpense30">0.00</strong> USD</p>
-          </div>
-          <div class="forecast-box">
-            <h3>90 дней</h3>
-            <p>Доход: <strong id="forecastIncome90">0.00</strong> USD</p>
-            <p>Расход: <strong id="forecastExpense90">0.00</strong> USD</p>
+          <div class="hero-balance-card">
+            <p class="muted-label">Сальдо 30 дней</p>
+            <p class="hero-balance-value">
+              <span id="forecastHeroBalance">0</span>
+            </p>
+            <p class="hero-note" id="forecastHeroNote">Недостаточно данных</p>
           </div>
         </div>
-        <!-- Диаграмма сравнения доходов и расходов -->
-        <div style="margin-top: 2rem">
-          <canvas
-            id="forecastChart"
-            width="600"
-            height="300"
-            aria-label="График прогноза"
-            role="img"
-          ></canvas>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('forecastChart').scrollIntoView({behavior:'smooth'})">Показать диаграмму</button>
+          <button class="btn-secondary btn-pill" onclick="document.getElementById('riskPanel').scrollIntoView({behavior:'smooth'})">Проверить риски</button>
         </div>
       </section>
-      <section class="card">
-        <h2>Категории в зоне риска</h2>
-        <p>
-          Если фактические расходы приближаются к установленному лимиту,
-          категория попадает в список риска. Это может означать, что стоит
-          пересмотреть бюджет или сократить траты.
-        </p>
-        <ul id="riskList"></ul>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">Доходы 7 дн.</p>
+          <p class="metric-value"><strong id="forecastIncome7">0.00</strong></p>
+          <p class="metric-subtitle">В расчётной валюте</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Расходы 7 дн.</p>
+          <p class="metric-value"><strong id="forecastExpense7">0.00</strong></p>
+          <p class="metric-subtitle">Прогноз</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Доходы 30 дн.</p>
+          <p class="metric-value"><strong id="forecastIncome30">0.00</strong></p>
+          <p class="metric-subtitle">Сумма за месяц</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Расходы 30 дн.</p>
+          <p class="metric-value"><strong id="forecastExpense30">0.00</strong></p>
+          <p class="metric-subtitle">Сумма за месяц</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Доходы 90 дн.</p>
+          <p class="metric-value"><strong id="forecastIncome90">0.00</strong></p>
+          <p class="metric-subtitle">Квартал</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Расходы 90 дн.</p>
+          <p class="metric-value"><strong id="forecastExpense90">0.00</strong></p>
+          <p class="metric-subtitle">Квартал</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel panel--stretch" aria-labelledby="forecastChartTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Диаграмма</p>
+              <h2 id="forecastChartTitle">Сравнение доходов и расходов</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <canvas id="forecastChart" width="700" height="320" aria-label="Диаграмма прогноза" role="img"></canvas>
+          </div>
+        </article>
+
+        <article class="panel" id="riskPanel" aria-labelledby="riskTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Риски</p>
+              <h2 id="riskTitle">Категории с перегрузкой</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <ul id="riskList" class="checklist"></ul>
+          </div>
+        </article>
       </section>
     </main>
+
     <footer>
       <p>&copy; 2025 FinTrackr. Все права защищены.</p>
     </footer>

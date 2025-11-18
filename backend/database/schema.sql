@@ -30,13 +30,11 @@ CREATE TABLE IF NOT EXISTS categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
-  kind TEXT NOT NULL CHECK(kind IN ('income', 'expense')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
-CREATE INDEX IF NOT EXISTS idx_categories_kind ON categories(kind);
 
 -- Transactions table
 CREATE TABLE IF NOT EXISTS transactions (

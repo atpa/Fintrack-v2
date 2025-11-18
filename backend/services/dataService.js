@@ -7,6 +7,7 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 const { ENV } = require("../config/constants");
+const { DEFAULT_CATEGORIES } = require('../config/defaultCategories');
 
 const dbPath = path.join(__dirname, '..', 'fintrackr.db');
 const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
@@ -32,11 +33,13 @@ function initDB() {
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     db.exec(schema);
     if (useMemory) {
-      console.log('🧪 In-memory test database initialized');
+      console.log('рџ§Є In-memory test database initialized');
     } else {
-      console.log('✅ Database initialized with schema');
+      console.log('вњ… Database initialized with schema');
     }
   }
+  migrateCategoriesTable();
+  seedDefaultCategoriesForAllUsers();
 
   return db;
 }
@@ -61,6 +64,56 @@ function closeDB() {
   }
 }
 
+function migrateCategoriesTable() {
+  const info = getDB().prepare(`PRAGMA table_info('categories')`).all();
+  const hasKindColumn = info.some((col) => col.name === 'kind');
+  if (!hasKindColumn) {
+    return;
+  }
+
+  const migration = getDB().transaction(() => {
+    getDB().prepare(`
+      CREATE TABLE IF NOT EXISTS categories_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `).run();
+
+    getDB().prepare(`
+      INSERT INTO categories_new (id, user_id, name, created_at)
+      SELECT id, user_id, name, created_at FROM categories
+    `).run();
+
+    getDB().prepare('DROP TABLE categories').run();
+    getDB().prepare('ALTER TABLE categories_new RENAME TO categories').run();
+    getDB().prepare('CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id)').run();
+  });
+
+  migration();
+}
+
+function seedDefaultCategoriesForUser(userId) {
+  if (!userId) return;
+  const existing = getDB()
+    .prepare('SELECT COUNT(*) as count FROM categories WHERE user_id = ?')
+    .get(userId).count;
+  if (existing > 0) return;
+
+  const stmt = getDB().prepare('INSERT INTO categories (user_id, name) VALUES (?, ?)');
+  const insertMany = getDB().transaction((names) => {
+    names.forEach((name) => stmt.run(userId, name));
+  });
+  insertMany(DEFAULT_CATEGORIES);
+}
+
+function seedDefaultCategoriesForAllUsers() {
+  const users = getDB().prepare('SELECT id FROM users').all();
+  users.forEach((user) => seedDefaultCategoriesForUser(user.id));
+}
+
 // ==================== USERS ====================
 
 function getAllUsers() {
@@ -81,7 +134,9 @@ function createUser(name, email, passwordHash) {
     VALUES (?, ?, ?)
   `);
   const result = stmt.run(name, email, passwordHash);
-  return result.lastInsertRowid;
+  const userId = result.lastInsertRowid;
+  seedDefaultCategoriesForUser(userId);
+  return userId;
 }
 
 function updateUser(id, updates) {
@@ -180,15 +235,21 @@ function getCategoryById(id) {
 }
 
 function getCategoriesByUserId(userId) {
-  return getDB().prepare('SELECT * FROM categories WHERE user_id = ?').all(userId);
+  const stmt = getDB().prepare('SELECT * FROM categories WHERE user_id = ? ORDER BY name');
+  let categories = stmt.all(userId);
+  if (!categories.length) {
+    seedDefaultCategoriesForUser(userId);
+    categories = stmt.all(userId);
+  }
+  return categories;
 }
 
-function createCategory(userId, name, kind) {
+function createCategory(userId, name) {
   const stmt = getDB().prepare(`
-    INSERT INTO categories (user_id, name, kind)
-    VALUES (?, ?, ?)
+    INSERT INTO categories (user_id, name)
+    VALUES (?, ?)
   `);
-  const result = stmt.run(userId, name, kind);
+  const result = stmt.run(userId, name);
   return result.lastInsertRowid;
 }
 
@@ -199,10 +260,6 @@ function updateCategory(id, updates) {
   if (updates.name !== undefined) {
     fields.push('name = ?');
     values.push(updates.name);
-  }
-  if (updates.kind !== undefined) {
-    fields.push('kind = ?');
-    values.push(updates.kind);
   }
   
   if (fields.length === 0) return false;
@@ -602,8 +659,12 @@ function setData(data) {
     const accountStmt = db.prepare('INSERT INTO accounts (id, user_id, name, currency, balance) VALUES (@id, @user_id, @name, @currency, @balance)');
     (data.accounts || []).forEach((account) => accountStmt.run(account));
 
-    const categoryStmt = db.prepare('INSERT INTO categories (id, user_id, name, kind) VALUES (@id, @user_id, @name, @kind)');
-    (data.categories || []).forEach((category) => categoryStmt.run(category));
+    const categoryStmt = db.prepare('INSERT INTO categories (id, user_id, name) VALUES (@id, @user_id, @name)');
+    (data.categories || []).forEach((category) => categoryStmt.run({
+      id: category.id,
+      user_id: category.user_id,
+      name: category.name
+    }));
 
     const budgetStmt = db.prepare('INSERT INTO budgets (id, user_id, category_id, month, limit_amount, spent, type, percent, currency) VALUES (@id, @user_id, @category_id, @month, @limit_amount, @spent, @type, @percent, @currency)');
     (data.budgets || []).forEach((budget) => budgetStmt.run({

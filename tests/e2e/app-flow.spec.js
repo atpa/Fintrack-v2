@@ -8,8 +8,8 @@ const baseData = {
     { id: 1, name: 'Everyday Account', currency: 'USD', balance: 1200 },
   ],
   categories: [
-    { id: 1, name: 'Salary', kind: 'income' },
-    { id: 2, name: 'Groceries', kind: 'expense' },
+    { id: 1, name: 'Salary' },
+    { id: 2, name: 'Groceries' },
   ],
   transactions: [
     {
@@ -137,7 +137,6 @@ test('user can manage categories and accounts', async ({ page }) => {
 
   const categoryName = `Новая категория ${Date.now()}`;
   await page.fill('#catName', categoryName);
-  await page.selectOption('#catKind', 'expense');
   await Promise.all([
     page.waitForResponse((response) =>
       response.url().endsWith('/api/categories') && response.request().method() === 'POST'

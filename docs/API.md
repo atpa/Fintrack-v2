@@ -56,8 +56,8 @@ Response `201 Created` with the persisted account.
 
 ### Categories
 - `GET /api/categories`
-- `POST /api/categories` — `{ name, kind: "income" | "expense" }`
-- `PUT /api/categories/:id` — `{ name?, kind? }`
+- `POST /api/categories` - `{ name }`
+- `PUT /api/categories/:id` - `{ name? }`
 - `DELETE /api/categories/:id`
 
 ### Transactions

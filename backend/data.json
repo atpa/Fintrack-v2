@@ -47,68 +47,57 @@
     {
       "id": 1,
       "name": "Продукты",
-      "kind": "expense",
       "user_id": 1
     },
     {
       "id": 2,
       "name": "Зарплата",
-      "kind": "income",
       "user_id": 1
     },
     {
       "id": 3,
       "name": "Транспорт",
-      "kind": "expense",
       "user_id": 1
     },
     {
       "id": 4,
       "name": "Развлечения",
-      "kind": "expense",
       "user_id": 1
     },
     {
       "id": 5,
       "name": "Подарки",
-      "kind": "expense",
       "user_id": 1
     },
     {
       "id": 6,
       "user_id": 2,
-      "name": "Продукты",
-      "kind": "expense"
+      "name": "Продукты"
     },
     {
       "id": 7,
       "user_id": 2,
-      "name": "Развлечения",
-      "kind": "expense"
+      "name": "Развлечения"
     },
     {
       "id": 8,
       "user_id": 2,
-      "name": "ЗП",
-      "kind": "income"
+      "name": "ЗП"
     },
     {
       "id": 9,
       "user_id": 2,
-      "name": "Темки",
-      "kind": "income"
+      "name": "Темки"
     },
     {
       "id": 10,
       "user_id": 2,
-      "name": "Крипта",
-      "kind": "income"
+      "name": "Крипта"
     },
     {
       "id": 11,
       "user_id": 2,
-      "name": "Крипта расходы",
-      "kind": "expense"
+      "name": "Крипта расходы"
     }
   ],
   "transactions": [

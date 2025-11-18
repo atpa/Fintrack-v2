@@ -1,43 +1,146 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FinTrackr – Обучение</title>
-  <link rel="stylesheet" href="css/design-system.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
-  <script defer src="js/education.js"></script>
-</head>
-<body class="workspace-page" data-page-title="��������" data-page-subtitle="�������� ����������� �������� � ���������">
-  <header>
-    <div class="brand visually-hidden">
-      <a href="dashboard.html">FinTrackr</a>
-    </div>
-    <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTrackr - Обучение</title>
+    <link rel="stylesheet" href="css/design-system.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="js/education.js"></script>
+  </head>
+  <body class="workspace-page" data-page-title="Обучение" data-page-subtitle="Практические курсы по управлению финансами">
+    <header>
+      <div class="brand visually-hidden">
+        <a href="dashboard.html">FinTrackr</a>
+      </div>
+      <button class="burger" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
 
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Основная навигация">
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="Разделы приложения">
+          <div class="nav-section">
+            <h3 class="nav-section-title">Основные</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a></li>
+              <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">💼</span><span class="nav-label">Счета</span></a></li>
+              <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">↔</span><span class="nav-label">Операции</span></a></li>
+              <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">🏷</span><span class="nav-label">Категории</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Финансовые</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a></li>
+              <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a></li>
+              <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">🗓</span><span class="nav-label">Планируемые</span></a></li>
+              <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Регулярные</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Аналитика</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="reports.html" class="nav-link"><span class="nav-icon">📈</span><span class="nav-label">Отчёты</span></a></li>
+              <li class="nav-item"><a href="forecast.html" class="nav-link"><span class="nav-icon">📉</span><span class="nav-label">Прогноз</span></a></li>
+              <li class="nav-item"><a href="rules.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Правила</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">Сервисы</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="education.html" class="nav-link"><span class="nav-icon">📚</span><span class="nav-label">Обучение</span></a></li>
+              <li class="nav-item"><a href="premium.html" class="nav-link"><span class="nav-icon">⭐</span><span class="nav-label">Премиум</span></a></li>
+              <li class="nav-item"><a href="settings.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Настройки</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </aside>
 
-  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Боковая навигация">
-      <!-- sidebar-top removed: sidebar starts at header edge -->
-  </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
-  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-  <main>
-    <section class="card">
-      <h2>Финансовая грамотность</h2>
-      <p>Изучайте основы управления финансами, проходите уроки и викторины, чтобы улучшить своё финансовое здоровье. За каждое завершённое занятие начисляются баллы.</p>
-      <div id="lessonsContainer" class="lessons-grid"></div>
-    </section>
-    <section class="card">
-      <h2>Квиз</h2>
-      <p>Проверьте свои знания: выберите правильный вариант ответа.</p>
-      <div id="quizContainer"></div>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2025 FinTrackr. Все права защищены.</p>
-  </footer>
-</body>
+    <main class="workspace-main workspace-shell" role="main" aria-label="Сервис обучения">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Обучение</p>
+            <h1>Финансовые навыки в одном разделе</h1>
+            <p class="hero-description">
+              Проходите короткие уроки, тестируйте знания и фиксируйте прогресс. Курсы обновляются каждую неделю.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="educationHeroTag">0 уроков</span>
+              <span class="hero-pill hero-pill--soft" id="educationHeroQuizTag">0% точность квиза</span>
+            </div>
+          </div>
+          <div class="hero-balance-card">
+            <p class="muted-label">Прогресс обучения</p>
+            <p class="hero-balance-value">
+              <span id="educationHeroProgress">0%</span>
+            </p>
+            <p class="hero-note" id="educationHeroNote">Нет завершённых уроков</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.querySelector('#lessonsPanel').scrollIntoView({behavior:'smooth'})">Перейти к урокам</button>
+          <button class="btn-secondary btn-pill" onclick="document.querySelector('#quizPanel').scrollIntoView({behavior:'smooth'})">Ответить на квиз</button>
+        </div>
+      </section>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">Всего уроков</p>
+          <p class="metric-value"><strong id="educationMetricLessons">0</strong></p>
+          <p class="metric-subtitle">Курсы в каталоге</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Пройдено</p>
+          <p class="metric-value"><strong id="educationMetricCompleted">0</strong></p>
+          <p class="metric-subtitle">Готовых модулей</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Точность квиза</p>
+          <p class="metric-value"><strong id="educationMetricAccuracy">0%</strong></p>
+          <p class="metric-subtitle">Правильных ответов</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Вопросов в базе</p>
+          <p class="metric-value"><strong id="educationMetricQuiz">0</strong></p>
+          <p class="metric-subtitle">Проверьте себя</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel panel--stretch" id="lessonsPanel" aria-labelledby="lessonsTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Каталог уроков</p>
+              <h2 id="lessonsTitle">Практика и конспекты</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div id="lessonsContainer" class="lessons-grid"></div>
+          </div>
+        </article>
+
+        <article class="panel panel--stretch" id="quizPanel" aria-labelledby="quizTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Квиз</p>
+              <h2 id="quizTitle">Проверьте знания</h2>
+            </div>
+          </div>
+          <div class="panel-body" id="quizContainer"></div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 FinTrackr. Все права защищены.</p>
+    </footer>
+  </body>
 </html>

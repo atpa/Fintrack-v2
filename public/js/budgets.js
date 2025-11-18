@@ -1,31 +1,22 @@
 /**
- * �㭪樨 ��� �ࠢ����� ��⠬�: �⮡ࠦ���� � ��⠭���� ����⮢.
+ * Хелперы для отображения и расчётов по страницe бюджетов.
  */
 
-/**
- * �।���⥫쭮 ���᫨�� ��室� �� ����栬 ��� ��⨬���樨
- * @param {Array} transactions - ���ᨢ �࠭���権
- * @param {string} targetCurrency - ������� �����
- * @returns {Map} - Map �����  ���� �㬬� ��室��
- */
 function calculateMonthlyIncomes(transactions, targetCurrency = 'USD') {
   const incomesByMonth = new Map();
-  
   if (!Array.isArray(transactions)) return incomesByMonth;
-  
-  transactions.forEach(tx => {
+
+  transactions.forEach((tx) => {
     if (tx.type === 'income') {
       const dt = new Date(tx.date);
-      const month = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
-      
-      const amount = typeof convertAmount === 'function' 
+      const month = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+      const amount = typeof convertAmount === 'function'
         ? convertAmount(Number(tx.amount), tx.currency || 'USD', targetCurrency)
         : Number(tx.amount);
-      
       incomesByMonth.set(month, (incomesByMonth.get(month) || 0) + amount);
     }
   });
-  
+
   return incomesByMonth;
 }
 
@@ -55,7 +46,7 @@ function renderBudgets(budgets, categories, tbody, transactions) {
     const emptyRow = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 5;
-    td.textContent = '��� �������� ���';
+    td.textContent = 'Нет активных бюджетов';
     emptyRow.appendChild(td);
     tbody.appendChild(emptyRow);
     updateBudgetsInsights({
@@ -65,16 +56,15 @@ function renderBudgets(budgets, categories, tbody, transactions) {
       percentShare: 0,
       uniqueMonthsCount: 0,
     });
-    setText('budgetsTableHint', '���������: 0');
+    setText('budgetsTableHint', 'Записей: 0');
     return;
   }
-  
-  // �।���⥫쭮 ����塞 ��室� �� ����栬 ��� ��� �����
+
   const incomesCacheByCur = new Map();
-  
-  budgets.forEach(budget => {
+
+  budgets.forEach((budget) => {
     const tr = document.createElement('tr');
-    const cat = categories.find(c => c.id === budget.category_id);
+    const cat = categories.find((c) => c.id === budget.category_id);
     const categoryTd = document.createElement('td');
     categoryTd.textContent = cat ? cat.name : '-';
     const monthTd = document.createElement('td');
@@ -86,27 +76,32 @@ function renderBudgets(budgets, categories, tbody, transactions) {
     let dynamicLimit = Number(budget.limit) || 0;
     const bCur = budget.currency || 'USD';
     stats.uniqueMonths.add(budget.month);
-    
-    // �᫨ ��� ��業��, �ᯮ��㥬 ���஢���� ��室�
+
     if (budget.type === 'percent' && budget.percent != null) {
       stats.percentBased += 1;
-      // ����砥� ��� ᮧ���� ��� ��室�� ��� �⮩ ������
       if (!incomesCacheByCur.has(bCur)) {
         incomesCacheByCur.set(bCur, calculateMonthlyIncomes(transactions, bCur));
       }
       const incomesMap = incomesCacheByCur.get(bCur);
       const monthlyIncome = incomesMap.get(budget.month) || 0;
-      
       dynamicLimit = monthlyIncome * (Number(budget.percent) / 100);
-      const limText = typeof formatCurrency === 'function' ? formatCurrency(dynamicLimit, bCur) : `${dynamicLimit.toFixed(2)} ${bCur}`;
+      const limText = typeof formatCurrency === 'function'
+        ? formatCurrency(dynamicLimit, bCur)
+        : `${dynamicLimit.toFixed(2)} ${bCur}`;
       displayLimit = `${Number(budget.percent).toFixed(1)}% (${limText})`;
     } else {
-      displayLimit = typeof formatCurrency === 'function' ? formatCurrency(budget.limit, bCur) : `${Number(budget.limit).toFixed(2)} ${bCur}`;
+      displayLimit = typeof formatCurrency === 'function'
+        ? formatCurrency(budget.limit, bCur)
+        : `${Number(budget.limit).toFixed(2)} ${bCur}`;
     }
     limitTd.textContent = displayLimit;
+
     const spentValue = Number(budget.spent) || 0;
-    const spentText = typeof formatCurrency === 'function' ? formatCurrency(spentValue, bCur) : `${spentValue.toFixed(2)} ${bCur}`;
+    const spentText = typeof formatCurrency === 'function'
+      ? formatCurrency(spentValue, bCur)
+      : `${spentValue.toFixed(2)} ${bCur}`;
     spentTd.textContent = spentText;
+
     const percentage = dynamicLimit > 0 ? Math.min(100, (spentValue / dynamicLimit) * 100) : 0;
     const barContainer = document.createElement('div');
     barContainer.style.backgroundColor = '#e2e8f0';
@@ -116,7 +111,7 @@ function renderBudgets(budgets, categories, tbody, transactions) {
     const bar = document.createElement('div');
     bar.style.height = '100%';
     bar.style.borderRadius = '4px';
-    bar.style.width = percentage + '%';
+    bar.style.width = `${percentage}%`;
     bar.style.backgroundColor = percentage > 100 ? 'var(--danger)' : 'var(--primary)';
     barContainer.appendChild(bar);
     progressTd.appendChild(barContainer);
@@ -131,13 +126,18 @@ function renderBudgets(budgets, categories, tbody, transactions) {
         stats.overspent += 1;
       }
     }
-    const convertedLimit = typeof convertAmount === 'function' ? convertAmount(dynamicLimit, bCur, workspaceCurrency) : dynamicLimit;
-    const convertedSpent = typeof convertAmount === 'function' ? convertAmount(spentValue, bCur, workspaceCurrency) : spentValue;
+
+    const convertedLimit = typeof convertAmount === 'function'
+      ? convertAmount(dynamicLimit, bCur, workspaceCurrency)
+      : dynamicLimit;
+    const convertedSpent = typeof convertAmount === 'function'
+      ? convertAmount(spentValue, bCur, workspaceCurrency)
+      : spentValue;
     stats.allocated += convertedLimit;
     stats.spent += convertedSpent;
   });
 
-  setText('budgetsTableHint', `���������: ${stats.count}`);
+  setText('budgetsTableHint', `Записей: ${stats.count}`);
   const avgUtilization = stats.ratioCount ? stats.ratioSum / stats.ratioCount : 0;
   const percentShare = stats.count ? stats.percentBased / stats.count : 0;
   updateBudgetsInsights({
@@ -153,22 +153,18 @@ function updateBudgetsInsights(stats) {
   const currency = stats.workspaceCurrency || 'USD';
   const utilizationValue = Math.round((stats.avgUtilization || 0) * 100);
   const percentShareValue = Math.round((stats.percentShare || 0) * 100);
-  const formattedAllocated =
-    typeof formatCompactCurrency === 'function'
-      ? formatCompactCurrency(stats.allocated, currency)
-      : formatCurrency(stats.allocated, currency);
+  const formattedAllocated = typeof formatCompactCurrency === 'function'
+    ? formatCompactCurrency(stats.allocated, currency)
+    : formatCurrency(stats.allocated, currency);
   const formattedSpent = typeof formatCurrency === 'function'
     ? formatCurrency(stats.spent, currency)
     : `${Number(stats.spent || 0).toFixed(2)} ${currency}`;
 
   setText('budgetsHeroAllocated', formattedAllocated);
   setText('budgetsHeroCurrency', currency);
-  setText(
-    'budgetsHeroNote',
-    `������� ${formattedSpent} (${utilizationValue}% �� ����஢����)`
-  );
-  setText('budgetsHeroPeriodTag', `${stats.uniqueMonthsCount || 0} ����.`);
-  setText('budgetsHeroPercentTag', `${percentShareValue}% ��業�`);
+  setText('budgetsHeroNote', `Израсходовано ${formattedSpent} (${utilizationValue}% от лимитов)`);
+  setText('budgetsHeroPeriodTag', `${stats.uniqueMonthsCount || 0} мес.`);
+  setText('budgetsHeroPercentTag', `${percentShareValue}% процентных`);
 
   setText('budgetsMetricCount', stats.count || 0);
   setText('budgetsMetricOverspent', stats.overspent || 0);
@@ -182,25 +178,24 @@ async function initBudgetsPage() {
   const [budgets, categories, transactions] = await Promise.all([
     fetchData('/api/budgets'),
     fetchData('/api/categories'),
-    fetchData('/api/transactions')
+    fetchData('/api/transactions'),
   ]);
   let transactionsCache = transactions;
   renderBudgets(budgets, categories, tbody, transactionsCache);
-  // Populate category dropdown for budget form
+
   const catSelect = document.getElementById('budgetCategory');
   if (catSelect) {
     catSelect.innerHTML = '';
-    categories.forEach(cat => {
+    categories.forEach((cat) => {
       const opt = document.createElement('option');
       opt.value = cat.id;
       opt.textContent = cat.name;
       catSelect.appendChild(opt);
     });
   }
-  // Handle budget limit form
+
   const form = document.getElementById('addBudgetForm');
   if (form) {
-    // ��४��祭�� �⮡ࠦ���� ����� ����� � ��業� � ����ᨬ��� �� ⨯�
     const typeSelect = document.getElementById('budgetType');
     const limitContainer = document.getElementById('limitContainer');
     const percentContainer = document.getElementById('percentContainer');
@@ -217,7 +212,8 @@ async function initBudgetsPage() {
       typeSelect.addEventListener('change', toggleFields);
       toggleFields();
     }
-    form.addEventListener('submit', async e => {
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const catSel = document.getElementById('budgetCategory');
       const monthInput = document.getElementById('budgetMonth');
@@ -231,56 +227,54 @@ async function initBudgetsPage() {
         limit: parseFloat(limitInput.value),
         type: typeSel?.value || 'fixed',
         percent: percentInput?.value ? parseFloat(percentInput.value) : null,
-        currency: document.getElementById('budgetCurrency')?.value || 'USD'
+        currency: document.getElementById('budgetCurrency')?.value || 'USD',
       };
 
-      // ������᪠� ��������
       if (!payload.month) {
-        monthInput.setCustomValidity('�롥�� �����');
+        monthInput.setCustomValidity('Укажите месяц');
         monthInput.reportValidity();
         setTimeout(() => monthInput.setCustomValidity(''), 1500);
         return;
       }
       if (!payload.category_id) {
-        catSel.setCustomValidity('�롥�� ��⥣���');
+        catSel.setCustomValidity('Выберите категорию');
         catSel.reportValidity();
         setTimeout(() => catSel.setCustomValidity(''), 1500);
         return;
       }
       if (payload.type === 'percent') {
         const p = Number(payload.percent);
-        if (!isFinite(p) || p < 0 || p > 100) {
-          percentInput.setCustomValidity('��業� ������ ���� �᫮� �� 0 �� 100');
+        if (!Number.isFinite(p) || p < 0 || p > 100) {
+          percentInput.setCustomValidity('Процент должен быть от 0 до 100');
           percentInput.reportValidity();
           setTimeout(() => percentInput.setCustomValidity(''), 1500);
           return;
         }
-        // ��� ��業⭮�� ����� ���� limit ����� �����஢���/�����
         payload.limit = 0;
       } else {
         const l = Number(payload.limit);
-        if (!isFinite(l) || l < 0) {
-          limitInput.setCustomValidity('����� ������ ���� �᫮� 0 ��� �����');
+        if (!Number.isFinite(l) || l < 0) {
+          limitInput.setCustomValidity('Сумма должна быть не меньше 0');
           limitInput.reportValidity();
           setTimeout(() => limitInput.setCustomValidity(''), 1500);
           return;
         }
         payload.percent = null;
       }
+
       try {
         const resp = await fetch('/api/budgets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         if (!resp.ok) {
           const err = await resp.json();
-          alert('�訡��: ' + (err.error || '�� 㤠���� ��࠭��� ���'));
+          alert('Ошибка: ' + (err.error || 'Не удалось сохранить бюджет'));
           return;
         }
         const updated = await resp.json();
-        // �᫨ ��� �������, ������塞, ���� ������塞
-        const idx = budgets.findIndex(b => b.id === updated.id);
+        const idx = budgets.findIndex((b) => b.id === updated.id);
         if (idx !== -1) {
           budgets[idx] = updated;
         } else {
@@ -290,7 +284,7 @@ async function initBudgetsPage() {
         form.reset();
       } catch (err) {
         console.error(err);
-        alert('�訡�� ��');
+        alert('Ошибка сети');
       }
     });
   }

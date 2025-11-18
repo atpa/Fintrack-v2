@@ -58,38 +58,32 @@ function createDemoAccounts(db, userId) {
  */
 function createDemoCategories(db, userId) {
   const categories = [
-    // Income categories
-    { name: 'Salary', kind: 'income' },
-    { name: 'Freelance', kind: 'income' },
-    { name: 'Investments', kind: 'income' },
-    { name: 'Other Income', kind: 'income' },
-    
-    // Expense categories
-    { name: 'Groceries', kind: 'expense' },
-    { name: 'Transportation', kind: 'expense' },
-    { name: 'Utilities', kind: 'expense' },
-    { name: 'Entertainment', kind: 'expense' },
-    { name: 'Healthcare', kind: 'expense' },
-    { name: 'Shopping', kind: 'expense' },
-    { name: 'Dining Out', kind: 'expense' },
-    { name: 'Education', kind: 'expense' },
-    { name: 'Housing', kind: 'expense' },
-    { name: 'Insurance', kind: 'expense' },
-    { name: 'Other Expenses', kind: 'expense' }
+    'Salary',
+    'Freelance',
+    'Investments',
+    'Other Income',
+    'Groceries',
+    'Transportation',
+    'Utilities',
+    'Entertainment',
+    'Healthcare',
+    'Shopping',
+    'Dining Out',
+    'Education',
+    'Housing',
+    'Insurance',
+    'Other Expenses'
   ];
   
   const insertCategory = db.prepare(`
-    INSERT INTO categories (user_id, name, kind)
-    VALUES (?, ?, ?)
+    INSERT INTO categories (user_id, name)
+    VALUES (?, ?)
   `);
   
-  const categoryIds = { income: [], expense: [] };
-  for (const category of categories) {
-    const result = insertCategory.run(userId, category.name, category.kind);
-    categoryIds[category.kind].push({
-      id: result.lastInsertRowid,
-      name: category.name
-    });
+  const categoryIds = {};
+  for (const name of categories) {
+    const result = insertCategory.run(userId, name);
+    categoryIds[name] = result.lastInsertRowid;
   }
   
   console.log(`✅ Created ${categories.length} demo categories`);
@@ -125,7 +119,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     // Monthly salary (income)
     transactions.push({
       account_id: accountIds[0],
-      category_id: categoryIds.income.find(c => c.name === 'Salary').id,
+      category_id: categoryIds['Salary'],
       type: 'income',
       amount: 5000 + Math.random() * 1000,
       currency: 'USD',
@@ -137,7 +131,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     if (Math.random() > 0.5) {
       transactions.push({
         account_id: accountIds[0],
-        category_id: categoryIds.income.find(c => c.name === 'Freelance').id,
+        category_id: categoryIds['Freelance'],
         type: 'income',
         amount: 500 + Math.random() * 1500,
         currency: 'USD',
@@ -148,7 +142,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     
     // Groceries (weekly, 4-5 times per month)
     const groceriesCount = 4 + Math.floor(Math.random() * 2);
-    const groceriesCategory = categoryIds.expense.find(c => c.name === 'Groceries').id;
+    const groceriesCategory = categoryIds['Groceries'];
     for (let i = 0; i < groceriesCount; i++) {
       transactions.push({
         account_id: getRandom(accountIds),
@@ -163,7 +157,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     
     // Transportation (10-15 times per month)
     const transportCount = 10 + Math.floor(Math.random() * 6);
-    const transportCategory = categoryIds.expense.find(c => c.name === 'Transportation').id;
+    const transportCategory = categoryIds['Transportation'];
     for (let i = 0; i < transportCount; i++) {
       transactions.push({
         account_id: getRandom(accountIds),
@@ -179,7 +173,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     // Utilities (monthly)
     transactions.push({
       account_id: accountIds[0],
-      category_id: categoryIds.expense.find(c => c.name === 'Utilities').id,
+      category_id: categoryIds['Utilities'],
       type: 'expense',
       amount: 120 + Math.random() * 50,
       currency: 'USD',
@@ -190,7 +184,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     // Housing (monthly rent/mortgage)
     transactions.push({
       account_id: accountIds[0],
-      category_id: categoryIds.expense.find(c => c.name === 'Housing').id,
+      category_id: categoryIds['Housing'],
       type: 'expense',
       amount: 1200 + Math.random() * 300,
       currency: 'USD',
@@ -200,7 +194,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     
     // Dining out (5-8 times per month)
     const diningCount = 5 + Math.floor(Math.random() * 4);
-    const diningCategory = categoryIds.expense.find(c => c.name === 'Dining Out').id;
+    const diningCategory = categoryIds['Dining Out'];
     for (let i = 0; i < diningCount; i++) {
       transactions.push({
         account_id: getRandom(accountIds),
@@ -215,7 +209,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     
     // Entertainment (3-5 times per month)
     const entertainmentCount = 3 + Math.floor(Math.random() * 3);
-    const entertainmentCategory = categoryIds.expense.find(c => c.name === 'Entertainment').id;
+    const entertainmentCategory = categoryIds['Entertainment'];
     for (let i = 0; i < entertainmentCount; i++) {
       transactions.push({
         account_id: getRandom(accountIds),
@@ -230,7 +224,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     
     // Shopping (2-4 times per month)
     const shoppingCount = 2 + Math.floor(Math.random() * 3);
-    const shoppingCategory = categoryIds.expense.find(c => c.name === 'Shopping').id;
+    const shoppingCategory = categoryIds['Shopping'];
     for (let i = 0; i < shoppingCount; i++) {
       transactions.push({
         account_id: getRandom(accountIds),
@@ -247,7 +241,7 @@ function createDemoTransactions(db, userId, accountIds, categoryIds) {
     if (Math.random() > 0.6) {
       transactions.push({
         account_id: accountIds[0],
-        category_id: categoryIds.expense.find(c => c.name === 'Healthcare').id,
+        category_id: categoryIds['Healthcare'],
         type: 'expense',
         amount: 50 + Math.random() * 150,
         currency: 'USD',
@@ -298,7 +292,7 @@ function createDemoBudgets(db, userId, categoryIds) {
   `);
   
   for (const budget of budgets) {
-    const category = categoryIds.expense.find(c => c.name === budget.category);
+    const category = categoryIds[budget.category];
     if (category) {
       // Calculate spent from transactions in current month
       const spent = db.prepare(`
@@ -402,7 +396,7 @@ function createDemoPlanned(db, userId, accountIds, categoryIds) {
   const planned = [
     {
       account_id: accountIds[0],
-      category_id: categoryIds.income.find(c => c.name === 'Salary').id,
+      category_id: categoryIds['Salary'],
       type: 'income',
       amount: 5500,
       currency: 'USD',
@@ -411,7 +405,7 @@ function createDemoPlanned(db, userId, accountIds, categoryIds) {
     },
     {
       account_id: accountIds[0],
-      category_id: categoryIds.expense.find(c => c.name === 'Housing').id,
+      category_id: categoryIds['Housing'],
       type: 'expense',
       amount: 1300,
       currency: 'USD',
@@ -420,7 +414,7 @@ function createDemoPlanned(db, userId, accountIds, categoryIds) {
     },
     {
       account_id: accountIds[0],
-      category_id: categoryIds.expense.find(c => c.name === 'Utilities').id,
+      category_id: categoryIds['Utilities'],
       type: 'expense',
       amount: 150,
       currency: 'USD',
@@ -475,7 +469,7 @@ function createDemoRules(db, userId, categoryIds) {
   `);
   
   for (const rule of rules) {
-    const category = categoryIds.expense.find(c => c.name === rule.category);
+    const category = categoryIds[rule.category];
     if (category) {
       insertRule.run(userId, rule.pattern, category.id, rule.confidence);
     }

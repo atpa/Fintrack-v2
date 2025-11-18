@@ -10,13 +10,6 @@ const categoryIdParams = checkSchema({
   }
 });
 
-const categoryKind = {
-  isIn: {
-    options: [['income', 'expense']],
-    errorMessage: 'Kind must be income or expense'
-  }
-};
-
 const createCategorySchema = checkSchema({
   name: {
     in: ['body'],
@@ -31,13 +24,6 @@ const createCategorySchema = checkSchema({
       options: { min: 2, max: 100 },
       errorMessage: 'Name must be between 2 and 100 characters'
     }
-  },
-  kind: {
-    in: ['body'],
-    exists: {
-      errorMessage: 'Kind is required'
-    },
-    ...categoryKind
   }
 });
 
@@ -53,11 +39,6 @@ const updateCategorySchema = checkSchema({
       options: { min: 2, max: 100 },
       errorMessage: 'Name must be between 2 and 100 characters'
     }
-  },
-  kind: {
-    in: ['body'],
-    optional: true,
-    ...categoryKind
   }
 });
 

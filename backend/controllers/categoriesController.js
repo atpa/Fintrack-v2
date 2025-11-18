@@ -18,17 +18,13 @@ function listCategories(req, res) {
 
 function createCategoryHandler(req, res) {
   try {
-    const { name, kind } = req.body;
+    const { name } = req.body;
 
-    if (!name || !kind) {
-      return res.status(400).json({ error: 'Name and kind are required' });
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
     }
 
-    if (!['income', 'expense'].includes(kind)) {
-      return res.status(400).json({ error: 'Invalid category kind' });
-    }
-
-    const categoryId = createCategory(req.user.userId, name, kind);
+    const categoryId = createCategory(req.user.userId, name);
     const category = getCategoryById(categoryId);
     res.status(201).json(category);
   } catch (error) {
@@ -49,16 +45,10 @@ function updateCategoryHandler(req, res) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    const { name, kind } = req.body;
+    const { name } = req.body;
     const updates = {};
 
     if (name !== undefined) updates.name = name;
-    if (kind !== undefined) {
-      if (!['income', 'expense'].includes(kind)) {
-        return res.status(400).json({ error: 'Invalid category kind' });
-      }
-      updates.kind = kind;
-    }
 
     updateCategory(req.params.id, updates);
 

@@ -85,16 +85,15 @@ function migrateFromJSON(db) {
     // Migrate categories
     if (jsonData.categories && jsonData.categories.length > 0) {
       const insertCategory = db.prepare(`
-        INSERT INTO categories (id, user_id, name, kind)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO categories (id, user_id, name)
+        VALUES (?, ?, ?)
       `);
       
       for (const category of jsonData.categories) {
         insertCategory.run(
           category.id,
           category.user_id,
-          category.name,
-          category.kind
+          category.name
         );
       }
       console.log(`✅ Migrated ${jsonData.categories.length} categories`);
@@ -339,3 +338,4 @@ module.exports = {
   migrateFromJSON,
   runMigration
 };
+

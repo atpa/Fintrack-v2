@@ -375,11 +375,6 @@ function validateTransactionInputs(payload, source) {
     setFieldError(source.currencySelect, 'Выберите валюту');
     valid = false;
   }
-  const category = transactionsState.categories.find((c) => c.id === payload.category_id);
-  if (category && category.kind !== payload.type) {
-    setFieldError(source.categorySelect, 'Тип категории и операции должны совпадать');
-    valid = false;
-  }
   return valid;
 }
 

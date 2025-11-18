@@ -68,7 +68,6 @@ CREATE TABLE categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
-  kind TEXT NOT NULL CHECK(kind IN ('income', 'expense')),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -76,11 +75,6 @@ CREATE TABLE categories (
 
 **Indexes:**
 - `idx_categories_user_id` on `user_id`
-- `idx_categories_kind` on `kind`
-
-**Kind Values:**
-- `income` - Income categories (e.g., Salary, Freelance)
-- `expense` - Expense categories (e.g., Groceries, Transportation)
 
 ---
 
@@ -478,7 +472,6 @@ All relationships enforce referential integrity:
 ### Check Constraints
 
 Enum-like constraints ensure data validity:
-- `kind IN ('income', 'expense')`
 - `type IN ('income', 'expense')`
 - `frequency IN ('daily', 'weekly', 'monthly', 'yearly')`
 

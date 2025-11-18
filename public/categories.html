@@ -12,7 +12,7 @@
     <script defer src="js/utils/ui.js"></script>
     <script type="module" src="js/categories.js"></script>
   </head>
-  <body class="workspace-page" data-page-title="Категории" data-page-subtitle="Организуйте расходы по категориям">
+  <body class="workspace-page" data-page-title="Категории" data-page-subtitle="Управляйте единым списком категорий для операций">
     <header>
       <div class="brand visually-hidden">
         <a href="dashboard.html">FinTrackr</a>
@@ -154,14 +154,7 @@
               <input type="text" id="catName" required />
               <span class="form-error" data-error-for="catName"></span>
             </div>
-            <div class="form-field" style="flex: 0 0 200px">
-              <label for="catKind">Тип</label>
-              <select id="catKind" required>
-                <option value="expense">Расход</option>
-                <option value="income">Доход</option>
-              </select>
-              <span class="form-error" data-error-for="catKind"></span>
-            </div>
+            
           </div>
           <button type="submit" class="btn-primary" style="margin-top: 1rem">
             Добавить
@@ -179,26 +172,18 @@
               placeholder="Название категории"
             />
           </div>
-          <div class="form-field" style="flex: 0 0 200px">
-            <label for="categoryFilterKind">Тип</label>
-            <select id="categoryFilterKind">
-              <option value="">Все</option>
-              <option value="income">Доход</option>
-              <option value="expense">Расход</option>
-            </select>
-          </div>
+          
         </div>
         <table id="categoriesTable" class="data-table" aria-label="Таблица категорий">
           <thead>
             <tr>
               <th>Название</th>
-              <th>Тип</th>
               <th>Действие</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colspan="3">Загрузка...</td>
+              <td colspan="2">Загрузка...</td>
             </tr>
           </tbody>
         </table>
@@ -222,3 +207,5 @@
     </footer>
   </body>
 </html>
+
+

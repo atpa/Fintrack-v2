@@ -8,8 +8,8 @@ const baseData = {
     { id: 1, user_id: 1, name: 'Main account', currency: 'USD', balance: 1000 },
   ],
   categories: [
-    { id: 1, user_id: 1, name: 'Salary', kind: 'income' },
-    { id: 2, user_id: 1, name: 'Groceries', kind: 'expense' },
+    { id: 1, user_id: 1, name: 'Salary' },
+    { id: 2, user_id: 1, name: 'Groceries' },
   ],
   transactions: [],
   budgets: [

@@ -1,12 +1,7 @@
 /**
- * Логика для страницы целей: загрузка целей, отображение и создание новых.
+ * Скрипты для страницы «Цели»: рендер карточек и сводки.
  */
 
-/**
- * Отрисовывает карточки целей в виде сетки.
- * @param {Array} goals
- * @param {HTMLElement} container
- */
 function setGoalsText(id, value) {
   const el = document.getElementById(id);
   if (el) {
@@ -22,26 +17,23 @@ function renderGoals(goals, container) {
     container.appendChild(p);
     return;
   }
-  goals.forEach(goal => {
+  goals.forEach((goal) => {
     const card = document.createElement('div');
     card.className = 'goal-card';
     const title = document.createElement('h3');
-    // XSS FIX: goal.title already uses textContent (safe)
     title.textContent = goal.title;
     const progressText = document.createElement('p');
     const current = Number(goal.current_amount || 0);
     const target = Number(goal.target_amount);
-    // XSS FIX: Replace innerHTML with textContent + createElement
     const strong = document.createElement('strong');
     strong.textContent = current.toFixed(2);
     progressText.appendChild(strong);
     progressText.appendChild(document.createTextNode(` / ${target.toFixed(2)}`));
-    // Создаём прогресс‑бар
     const barContainer = document.createElement('div');
     barContainer.className = 'progress-bar-small';
     const bar = document.createElement('div');
     const pct = target > 0 ? Math.min((current / target) * 100, 100) : 0;
-    bar.style.width = pct.toFixed(0) + '%';
+    bar.style.width = `${pct.toFixed(0)}%`;
     barContainer.appendChild(bar);
     const deadline = document.createElement('p');
     deadline.className = 'deadline';
@@ -75,12 +67,12 @@ function updateGoalsDashboard(goals) {
     { current: 0, target: 0, completed: 0, upcoming: 0 }
   );
   const avgTicket = total ? totals.target / total : 0;
-  const progress = totals.target > 0 ? (totals.current / totals.target) : 0;
+  const progress = totals.target > 0 ? totals.current / totals.target : 0;
 
-  setGoalsText('goalsHeroActiveTag', `${total} ����`);
-  setGoalsText('goalsHeroCompletedTag', `${totals.completed} ���������`);
+  setGoalsText('goalsHeroActiveTag', `${total} активных`);
+  setGoalsText('goalsHeroCompletedTag', `${totals.completed} завершено`);
   setGoalsText('goalsHeroProgress', `${Math.round(progress * 100)}%`);
-  setGoalsText('goalsHeroNote', `�������: ${totals.current.toFixed(0)} / ${totals.target.toFixed(0)}`);
+  setGoalsText('goalsHeroNote', `Прогресс: ${totals.current.toFixed(0)} / ${totals.target.toFixed(0)}`);
 
   setGoalsText('goalsMetricCount', total);
   setGoalsText('goalsMetricCompleted', totals.completed);
@@ -96,23 +88,23 @@ async function initGoalsPage() {
   updateGoalsDashboard(goals);
   const form = document.getElementById('addGoalForm');
   if (form) {
-    form.addEventListener('submit', async e => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const newGoal = {
         title: document.getElementById('goalTitle').value,
         target_amount: parseFloat(document.getElementById('goalTarget').value),
         current_amount: parseFloat(document.getElementById('goalCurrent').value) || 0,
-        deadline: document.getElementById('goalDeadline').value
+        deadline: document.getElementById('goalDeadline').value,
       };
       try {
         const resp = await fetch('/api/goals', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newGoal)
+          body: JSON.stringify(newGoal),
         });
         if (!resp.ok) {
           const err = await resp.json();
-          alert('Ошибка: ' + (err.error || 'не удалось добавить цель'));
+          alert('Ошибка: ' + (err.error || 'Не удалось создать цель'));
           return;
         }
         const created = await resp.json();

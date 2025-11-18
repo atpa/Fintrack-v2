@@ -113,7 +113,7 @@ FinTrackr - это персональный финансовый трекер, �
    - id, user_id, name, currency, balance, created_at
 
 3. **categories** - категории транзакций
-   - id, user_id, name, kind (income/expense), created_at
+   - id, user_id, name, created_at
 
 4. **transactions** - транзакции
    - id, user_id, account_id, category_id, type, amount, currency, date, note, created_at

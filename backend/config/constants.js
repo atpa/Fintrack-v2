@@ -50,10 +50,10 @@ const MIME_TYPES = {
 
 // Supported banks (mock data for MVP)
 const BANKS = [
-  { id: 1, name: "Тинькофф" },
-  { id: 2, name: "Сбербанк" },
-  { id: 3, name: "Альфа-Банк" },
-  { id: 4, name: "ВТБ" },
+  { id: 1, name: "РўРёРЅСЊРєРѕС„С„" },
+  { id: 2, name: "РЎР±РµСЂР±Р°РЅРє" },
+  { id: 3, name: "РђР»СЊС„Р°-Р‘Р°РЅРє" },
+  { id: 4, name: "Р’РўР‘" },
 ];
 
 // Currency exchange rates (relative to USD)
@@ -69,32 +69,32 @@ const MOCK_BANK_TRANSACTIONS = {
   1: [
     {
       external_id: "tnk_grocery_001",
-      description: "Перекрёсток, Москва",
+      description: "РџРµСЂРµРєСЂС‘СЃС‚РѕРє, РњРѕСЃРєРІР°",
       type: "expense",
       amount: 2350.4,
       currency: "RUB",
       date: "2025-03-12",
-      category: { name: "Продукты", kind: "expense" },
+      category: { name: "РџСЂРѕРґСѓРєС‚С‹"  },
     },
     {
       external_id: "tnk_taxi_001",
-      description: "Яндекс Такси",
+      description: "РЇРЅРґРµРєСЃ РўР°РєСЃРё",
       type: "expense",
       amount: 680.3,
       currency: "RUB",
       date: "2025-03-14",
-      category: { name: "Транспорт", kind: "expense" },
+      category: { name: "РўСЂР°РЅСЃРїРѕСЂС‚"  },
     },
   ],
   2: [
     {
       external_id: "sber_salary_001",
-      description: "Зарплата",
+      description: "Р—Р°СЂРїР»Р°С‚Р°",
       type: "income",
       amount: 150000,
       currency: "RUB",
       date: "2025-03-01",
-      category: { name: "Зарплата", kind: "income" },
+      category: { name: "Р—Р°СЂРїР»Р°С‚Р°"  },
     },
   ],
 };

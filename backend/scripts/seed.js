@@ -7,6 +7,7 @@ const path = require('path');
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
 const { RATE_MAP } = require('../config/constants');
+const { DEFAULT_CATEGORIES } = require('../config/defaultCategories');
 
 const dbPath = process.env.FINTRACKR_DB_PATH || path.join(__dirname, '..', 'fintrackr.db');
 
@@ -82,25 +83,37 @@ function seedCategories(db, users) {
   };
 
   const insert = db.prepare(`
-    INSERT INTO categories (user_id, name, kind)
-    VALUES (@user_id, @name, @kind)
+    INSERT INTO categories (user_id, name)
+    VALUES (@user_id, @name)
   `);
 
   const map = {};
   const create = db.transaction(() => {
     users.forEach((user) => {
-      map[user.id] = { income: {}, expense: {} };
+      map[user.id] = { income: {}, expense: {}, all: {} };
+
+      DEFAULT_CATEGORIES.forEach((name) => {
+        if (map[user.id].all[name]) return;
+        const { lastInsertRowid } = insert.run({ user_id: user.id, name });
+        map[user.id].all[name] = lastInsertRowid;
+      });
+
       Object.entries(categorySets).forEach(([kind, names]) => {
         names.forEach((name) => {
-          const { lastInsertRowid } = insert.run({ user_id: user.id, name, kind });
+          if (map[user.id].all[name]) {
+            map[user.id][kind][name] = map[user.id].all[name];
+            return;
+          }
+          const { lastInsertRowid } = insert.run({ user_id: user.id, name });
           map[user.id][kind][name] = lastInsertRowid;
+          map[user.id].all[name] = lastInsertRowid;
         });
       });
     });
   });
 
   create();
-  console.log('✅ Seeded categories for each user');
+  console.log('✅ Seeded categories for each user (base + demo-specific)');
   return map;
 }
 

@@ -1,9 +1,5 @@
 /**
- * ���ᮢ뢠�� ⠡���� �������� ����権.
- * @param {Array} plans
- * @param {Array} accounts
- * @param {Array} categories
- * @param {HTMLElement} tbody
+ * Рендер таблицы и статистики для планируемых операций.
  */
 function renderPlannedTable(plans, accounts, categories, tbody) {
   tbody.innerHTML = '';
@@ -11,30 +7,29 @@ function renderPlannedTable(plans, accounts, categories, tbody) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 7;
-    td.textContent = '��� �������஢����� ����権';
+    td.textContent = 'Нет запланированных операций';
     tr.appendChild(td);
     tbody.appendChild(tr);
     return;
   }
-  plans.forEach(plan => {
+  plans.forEach((plan) => {
     const tr = document.createElement('tr');
     const startTd = document.createElement('td');
     startTd.textContent = plan.start_date;
     const freqTd = document.createElement('td');
-    // �ਢ���� ���祭�� ����� � ����� ����⭮�� ����
-    const freqMap = { daily: '���������', weekly: '��������쭮', monthly: '�������筮', yearly: '��������' };
+    const freqMap = { daily: 'Ежедневно', weekly: 'Еженедельно', monthly: 'Ежемесячно', yearly: 'Ежегодно' };
     freqTd.textContent = freqMap[plan.frequency] || plan.frequency;
     const accTd = document.createElement('td');
-    const acc = accounts.find(a => a.id === plan.account_id);
+    const acc = accounts.find((a) => a.id === plan.account_id);
     accTd.textContent = acc ? acc.name : '-';
     const catTd = document.createElement('td');
-    const cat = categories.find(c => c.id === plan.category_id);
+    const cat = categories.find((c) => c.id === plan.category_id);
     catTd.textContent = cat ? cat.name : '-';
     const typeTd = document.createElement('td');
-    typeTd.textContent = plan.type === 'income' ? '��室' : '���室';
+    typeTd.textContent = plan.type === 'income' ? 'Доход' : 'Расход';
     typeTd.className = plan.type === 'income' ? 'status-income' : 'status-expense';
     const amtTd = document.createElement('td');
-    amtTd.textContent = Number(plan.amount).toFixed(2) + ' ' + plan.currency;
+    amtTd.textContent = `${Number(plan.amount).toFixed(2)} ${plan.currency}`;
     amtTd.className = plan.type === 'income' ? 'status-income' : 'status-expense';
     const noteTd = document.createElement('td');
     noteTd.textContent = plan.note || '';
@@ -80,11 +75,11 @@ function updatePlannedStats(plans) {
 
   const incomeShare = total ? Math.round((stats.income / total) * 100) : 0;
   stats.dates.sort((a, b) => a.getTime() - b.getTime());
-  const nextDate = stats.dates.find(d => d.getTime() >= Date.now()) || stats.dates[0];
+  const nextDate = stats.dates.find((d) => d.getTime() >= Date.now()) || stats.dates[0];
 
   const nextLabel = nextDate
     ? nextDate.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' })
-    : '���';
+    : '—';
 
   const formattedMonthly =
     typeof formatCompactCurrency === 'function'
@@ -98,9 +93,9 @@ function updatePlannedStats(plans) {
 
   set('plannedHeroMonthly', formattedMonthly);
   set('plannedHeroCurrency', workspaceCurrency);
-  set('plannedHeroNote', `����室: ${stats.income} / ���室: ${stats.expense}`);
-  set('plannedHeroNextTag', `����.: ${nextLabel}`);
-  set('plannedHeroSplitTag', `${incomeShare}% ��室`);
+  set('plannedHeroNote', `Доходы: ${stats.income} / Расходы: ${stats.expense}`);
+  set('plannedHeroNextTag', `Ближайшая: ${nextLabel}`);
+  set('plannedHeroSplitTag', `${incomeShare}% доходов`);
 
   set('plannedMetricTotal', total);
   set('plannedMetricIncome', stats.income);
@@ -114,17 +109,17 @@ async function initPlannedPage() {
   const [plansRaw, accounts, categories] = await Promise.all([
     fetchData('/api/planned'),
     fetchData('/api/accounts'),
-    fetchData('/api/categories')
+    fetchData('/api/categories'),
   ]);
   const plans = Array.isArray(plansRaw) ? plansRaw : [];
   renderPlannedTable(plans, accounts, categories, tbody);
   updatePlannedStats(plans);
-  // ������塞 ᥫ����
+
   const accSelect = document.getElementById('plannedAccount');
   const catSelect = document.getElementById('plannedCategory');
   if (accSelect) {
     accSelect.innerHTML = '';
-    accounts.forEach(acc => {
+    accounts.forEach((acc) => {
       const opt = document.createElement('option');
       opt.value = acc.id;
       opt.textContent = acc.name;
@@ -133,23 +128,23 @@ async function initPlannedPage() {
   }
   if (catSelect) {
     catSelect.innerHTML = '';
-    categories.forEach(cat => {
+    categories.forEach((cat) => {
       const opt = document.createElement('option');
       opt.value = cat.id;
       opt.textContent = cat.name;
       catSelect.appendChild(opt);
     });
   }
-  // ��⠭�������� ���� ��砫� �� 㬮�砭�� ᥣ����
+
   const startDateInput = document.getElementById('plannedStart');
   if (startDateInput) {
     const today = new Date().toISOString().slice(0, 10);
     startDateInput.value = today;
   }
-  // ��ࠡ��稪 ���
+
   const form = document.getElementById('addPlannedForm');
   if (form) {
-    form.addEventListener('submit', async e => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = {
         account_id: Number(accSelect.value),
@@ -159,17 +154,17 @@ async function initPlannedPage() {
         currency: document.getElementById('plannedCurrency').value,
         start_date: document.getElementById('plannedStart').value,
         frequency: document.getElementById('plannedFrequency').value,
-        note: document.getElementById('plannedNote').value
+        note: document.getElementById('plannedNote').value,
       };
       try {
         const resp = await fetch('/api/planned', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         if (!resp.ok) {
           const err = await resp.json();
-          alert('�訡��: ' + (err.error || '�� 㤠���� �������� �������� ������'));
+          alert('Ошибка: ' + (err.error || 'Не удалось создать расписание'));
           return;
         }
         const created = await resp.json();
@@ -177,11 +172,10 @@ async function initPlannedPage() {
         renderPlannedTable(plans, accounts, categories, tbody);
         updatePlannedStats(plans);
         form.reset();
-        // ������ ���� ��砫� � ᥣ����譥�� ���
         if (startDateInput) startDateInput.value = new Date().toISOString().slice(0, 10);
       } catch (err) {
         console.error(err);
-        alert('�訡�� ��');
+        alert('Ошибка сети');
       }
     });
   }

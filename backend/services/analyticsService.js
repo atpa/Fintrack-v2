@@ -96,7 +96,6 @@ function analyzeByCategory(transactions, categories, currency = 'USD', convertAm
     categoryMap[cat.id] = {
       id: cat.id,
       name: cat.name,
-      kind: cat.kind,
       total: 0,
       count: 0,
       average: 0,

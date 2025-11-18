@@ -18,7 +18,7 @@ async function loadCategories() {
     if (!categories.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 3;
+      td.colSpan = 2;
       td.textContent = 'Категорий пока нет';
       tr.appendChild(td);
       tbody.appendChild(tr);
@@ -28,8 +28,6 @@ async function loadCategories() {
       const tr = document.createElement('tr');
       const nameTd = document.createElement('td');
       nameTd.textContent = cat.name;
-      const kindTd = document.createElement('td');
-      kindTd.textContent = cat.kind === 'income' ? 'Доход' : 'Расход';
       const actionTd = document.createElement('td');
       const delBtn = document.createElement('button');
       delBtn.textContent = 'Удалить';
@@ -52,7 +50,7 @@ async function loadCategories() {
         }
       });
       actionTd.appendChild(delBtn);
-      tr.append(nameTd, kindTd, actionTd);
+      tr.append(nameTd, actionTd);
       tbody.appendChild(tr);
     });
   } catch (err) {
@@ -67,13 +65,12 @@ async function initCategoriesPage() {
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('catName').value.trim();
-      const kind = document.getElementById('catKind').value;
       if (!name) return;
       try {
         const resp = await fetch('/api/categories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, kind })
+          body: JSON.stringify({ name })
         });
         if (resp.ok) {
           const created = await resp.json();

@@ -70,14 +70,14 @@ describe('Request validation', () => {
     );
   });
 
-  test('categories creation rejects invalid kind', async () => {
+  test('categories creation requires a name', async () => {
     const response = await request(app)
       .post('/api/categories')
-      .send({ name: 'Health', kind: 'other' });
+      .send({});
 
     expect(response.status).toBe(400);
     expect(response.body.details).toEqual(
-      expect.arrayContaining([expect.objectContaining({ field: 'kind' })])
+      expect.arrayContaining([expect.objectContaining({ field: 'name' })])
     );
   });
 

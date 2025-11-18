@@ -16,17 +16,17 @@ async function loadRecurring() {
     const tbody = document.querySelector('#recurringTable tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
-    const currency = data.currency || items[0]?.currency || '?';
+    const currency = data.currency || items[0]?.currency || 'USD';
 
     if (!items.length) {
       const row = document.createElement('tr');
       const td = document.createElement('td');
       td.colSpan = 4;
-      td.textContent = '��� recurring �����';
+      td.textContent = 'Нет регулярных платежей';
       row.appendChild(td);
       tbody.appendChild(row);
     } else {
-      items.forEach(r => {
+      items.forEach((r) => {
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
         tdName.textContent = r.name;
@@ -42,11 +42,9 @@ async function loadRecurring() {
     }
 
     const total = items.length;
-    const fast = items.filter(r => Number(r.avgPeriodDays || 0) <= 30).length;
+    const fast = items.filter((r) => Number(r.avgPeriodDays || 0) <= 30).length;
     const avgPeriod = total
-      ? Math.round(
-          items.reduce((sum, r) => sum + (Number(r.avgPeriodDays) || 0), 0) / total
-        )
+      ? Math.round(items.reduce((sum, r) => sum + (Number(r.avgPeriodDays) || 0), 0) / total)
       : 0;
     const topItem = items.reduce((acc, item) => {
       const val = Number(item.estimatedMonthly) || 0;
@@ -60,12 +58,12 @@ async function loadRecurring() {
       ? formatCurrency(data.monthly || 0, currency)
       : `${Number(data.monthly || 0).toFixed(2)} ${currency}`;
 
-    setRecurringText('recurringMonthlySummary', `�㬬� �� 横���� ���⥦�� � �����: ${monthlyTotal}`);
+    setRecurringText('recurringMonthlySummary', `Сумма автосписаний за месяц: ${monthlyTotal}`);
     setRecurringText('recurringHeroMonthly', Number(data.monthly || 0).toFixed(2));
     setRecurringText('recurringHeroCurrency', currency);
-    setRecurringText('recurringHeroNote', `���������: ${total}`);
-    setRecurringText('recurringHeroCountTag', `${total} ���� �ண����`);
-    setRecurringText('recurringHeroFastTag', `${fast} �� �� 30 ����`);
+    setRecurringText('recurringHeroNote', `Подписок: ${total}`);
+    setRecurringText('recurringHeroCountTag', `${total} активных`);
+    setRecurringText('recurringHeroFastTag', `${fast} в ближайшие 30 дней`);
 
     setRecurringText('recurringMetricCount', total);
     setRecurringText('recurringMetricMonthly', fast);
@@ -76,7 +74,7 @@ async function loadRecurring() {
     );
   } catch (error) {
     console.error('Failed to load recurring data', error);
-    setRecurringText('recurringMonthlySummary', '�� 㤠���� �������� �������騥�� ����ы');
+    setRecurringText('recurringMonthlySummary', 'Не удалось загрузить регулярные платежи');
   }
 }
 

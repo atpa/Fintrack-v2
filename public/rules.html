@@ -3,173 +3,165 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinTrackr – Правила</title>
+    <title>FinTrackr - Правила</title>
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
+    <link rel="stylesheet" href="css/responsive-tables.css" />
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
     <script defer src="js/rules.js"></script>
   </head>
-  <body class="workspace-page" data-page-title="Правила" data-page-subtitle="Автоматизируйте сообщения и действия">
+  <body class="workspace-page" data-page-title="Правила" data-page-subtitle="Автоматическая категоризация операций">
     <header>
       <div class="brand visually-hidden">
         <a href="dashboard.html">FinTrackr</a>
       </div>
-      <button class="burger" aria-label="Меню">
-        <span></span><span></span><span></span>
-      </button>
+      <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
     </header>
 
-      <aside
-        class="sidebar"
-        id="sidebar"
-        role="navigation"
-        aria-label="Боковая навигация"
-      >
-      <!-- sidebar-top removed: profile/auth moved to header dropdown -->
-
-    <!-- sidebar-top removed: logo moved to header; sidebar starts at header edge -->
-              </li>
-              <li class="nav-item">
-                <a href="transactions.html" class="nav-link"
-                  ><span class="nav-icon">🔁</span
-                  ><span class="nav-label">Операции</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="categories.html" class="nav-link"
-                  ><span class="nav-icon">🔖</span
-                  ><span class="nav-label">Категории</span></a
-                >
-              </li>
-            </ul>
-          </div>
-
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Основная навигация">
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="Разделы приложения">
           <div class="nav-section">
-            <h3 class="nav-section-title">Планирование</h3>
+            <h3 class="nav-section-title">Основные</h3>
             <ul class="nav-list">
-              <li class="nav-item">
-                <a href="budgets.html" class="nav-link"
-                  ><span class="nav-icon">📊</span
-                  ><span class="nav-label">Бюджеты</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="goals.html" class="nav-link"
-                  ><span class="nav-icon">🎯</span
-                  ><span class="nav-label">Цели</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="planned.html" class="nav-link"
-                  ><span class="nav-icon">📅</span
-                  ><span class="nav-label">Планируемые</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="recurring.html" class="nav-link"
-                  ><span class="nav-icon">🔁</span
-                  ><span class="nav-label">Регулярные</span></a
-                >
-              </li>
+              <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a></li>
+              <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">💼</span><span class="nav-label">Счета</span></a></li>
+              <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">↔</span><span class="nav-label">Операции</span></a></li>
+              <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">🏷</span><span class="nav-label">Категории</span></a></li>
             </ul>
           </div>
-
+          <div class="nav-section">
+            <h3 class="nav-section-title">Финансовые</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a></li>
+              <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a></li>
+              <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">🗓</span><span class="nav-label">Планируемые</span></a></li>
+              <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Регулярные</span></a></li>
+            </ul>
+          </div>
           <div class="nav-section">
             <h3 class="nav-section-title">Аналитика</h3>
             <ul class="nav-list">
-              <li class="nav-item">
-                <a href="reports.html" class="nav-link"
-                  ><span class="nav-icon">📈</span
-                  ><span class="nav-label">Отчёты</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="forecast.html" class="nav-link"
-                  ><span class="nav-icon">🔮</span
-                  ><span class="nav-label">Прогнозы</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="rules.html" class="nav-link"
-                  ><span class="nav-icon">⚙️</span
-                  ><span class="nav-label">Правила</span></a
-                >
-              </li>
+              <li class="nav-item"><a href="reports.html" class="nav-link"><span class="nav-icon">📈</span><span class="nav-label">Отчёты</span></a></li>
+              <li class="nav-item"><a href="forecast.html" class="nav-link"><span class="nav-icon">📉</span><span class="nav-label">Прогноз</span></a></li>
+              <li class="nav-item"><a href="rules.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Правила</span></a></li>
             </ul>
           </div>
-
           <div class="nav-section">
-            <h3 class="nav-section-title">Дополнительно</h3>
+            <h3 class="nav-section-title">Сервисы</h3>
             <ul class="nav-list">
-              <li class="nav-item">
-                <a href="education.html" class="nav-link"
-                  ><span class="nav-icon">📚</span
-                  ><span class="nav-label">Обучение</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="premium.html" class="nav-link"
-                  ><span class="nav-icon">⭐</span
-                  ><span class="nav-label">Премиум</span></a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="settings.html" class="nav-link"
-                  ><span class="nav-icon">⚙️</span
-                  ><span class="nav-label">Настройки</span></a
-                >
-              </li>
+              <li class="nav-item"><a href="education.html" class="nav-link"><span class="nav-icon">📚</span><span class="nav-label">Обучение</span></a></li>
+              <li class="nav-item"><a href="premium.html" class="nav-link"><span class="nav-icon">⭐</span><span class="nav-label">Премиум</span></a></li>
+              <li class="nav-item"><a href="settings.html" class="nav-link"><span class="nav-icon">⚙</span><span class="nav-label">Настройки</span></a></li>
             </ul>
           </div>
         </nav>
-    </div>
-      </aside>
+      </div>
+    </aside>
 
-      <div
-        class="sidebar-backdrop"
-        id="sidebarBackdrop"
-        aria-hidden="true"
-      ></div>
-    <main>
-      <section class="card">
-        <h2>Добавить правило</h2>
-        <form id="addRuleForm">
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem">
-            <label style="flex: 1 1 200px">
-              Ключевое слово
-              <input type="text" id="ruleKeyword" required />
-            </label>
-            <label style="flex: 1 1 180px">
-              Категория
-              <select id="ruleCategorySelect" required>
-                <option value="">Загрузка...</option>
-              </select>
-            </label>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+    <main class="workspace-main workspace-shell" role="main" aria-label="Раздел автоматических правил">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Правила</p>
+            <h1>Категоризация трат без ручной рутины</h1>
+            <p class="hero-description">
+              Добавляйте ключевые слова, и FinTrackr будет автоматически назначать категории операциям.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="rulesHeroStatus">0 правил</span>
+              <span class="hero-pill hero-pill--soft" id="rulesHeroCoverage">0 категорий</span>
+            </div>
           </div>
-          <button type="submit" class="btn-primary" style="margin-top: 1rem">
-            Добавить
-          </button>
-        </form>
+          <div class="hero-balance-card">
+            <p class="muted-label">Автоматизация</p>
+            <p class="hero-balance-value">
+              <span id="rulesHeroAutomation">0%</span>
+            </p>
+            <p class="hero-note" id="rulesHeroNote">Нет активных правил</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('ruleFormPanel').scrollIntoView({behavior:'smooth'})">Добавить правило</button>
+          <button class="btn-secondary btn-pill" onclick="document.getElementById('rulesTablePanel').scrollIntoView({behavior:'smooth'})">Список правил</button>
+        </div>
       </section>
-      <section class="card">
-        <h2>Правила</h2>
-        <table id="rulesTable">
-          <thead>
-            <tr>
-              <th>Ключевое слово</th>
-              <th>Категория</th>
-              <th>Действие</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="3">Загрузка...</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">Всего правил</p>
+          <p class="metric-value"><strong id="rulesMetricCount">0</strong></p>
+          <p class="metric-subtitle">Автоматические сценарии</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Категорий</p>
+          <p class="metric-value"><strong id="rulesMetricCategories">0</strong></p>
+          <p class="metric-subtitle">Покрывают правила</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Покрытие</p>
+          <p class="metric-value"><strong id="rulesMetricCoverage">0%</strong></p>
+          <p class="metric-subtitle">Доля категорий</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel" id="ruleFormPanel" aria-labelledby="ruleFormTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Новое правило</p>
+              <h2 id="ruleFormTitle">Ключевые слова</h2>
+            </div>
+          </div>
+          <form id="addRuleForm" class="panel-body">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="ruleKeyword">Фраза или часть описания</label>
+                <input type="text" id="ruleKeyword" required placeholder="Например, coffee" />
+              </div>
+              <div class="form-field">
+                <label for="ruleCategorySelect">Категория</label>
+                <select id="ruleCategorySelect" required></select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Сохранить правило</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel panel--stretch" id="rulesTablePanel" aria-labelledby="rulesTableTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Автоматизация</p>
+              <h2 id="rulesTableTitle">Созданные правила</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrapper responsive-table">
+              <table id="rulesTable">
+                <thead>
+                  <tr>
+                    <th>Ключевое слово</th>
+                    <th>Категория</th>
+                    <th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="3">Загрузка...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
+
     <footer>
       <p>&copy; 2025 FinTrackr. Все права защищены.</p>
     </footer>

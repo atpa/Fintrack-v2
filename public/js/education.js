@@ -1,34 +1,31 @@
 /**
- * Логика для страницы обучения: вывод уроков и простой викторины.
+ * Логика страницы "Обучение": уроки, квиз и прогресс.
  */
 
-// Список уроков. Каждый объект содержит id, заголовок и краткое описание.
 const lessons = [
-  { id: 1, title: 'Основы бюджета', description: 'Узнайте, что такое доходы, расходы и зачем нужно вести бюджет.' },
-  { id: 2, title: 'Формирование финансовых целей', description: 'Поставьте себе цель и узнайте, как эффективно к ней идти.' },
-  { id: 3, title: 'Инвестиции и сбережения', description: 'Почему важно откладывать и как начать инвестировать.' }
+  { id: 1, title: 'Основы бюджета', description: 'Разбираем, как формировать категории расходов и следить за лимитами.' },
+  { id: 2, title: 'Подготовка целей', description: 'Учимся разбивать крупные цели на взносы и использовать автопереносы.' },
+  { id: 3, title: 'Инвестиционные шаги', description: 'Говорим о распределении активов и регулярных пополнениях.' }
 ];
 
-// Вопросы викторины. Каждый содержит вопрос, варианты ответов и индекс правильного.
 const quizQuestions = [
   {
-    question: 'Что такое актив?',
-    options: ['Долг, который нужно вернуть', 'То, что приносит доход', 'Расходы на развлечения'],
-    correct: 1
-  },
-  {
-    question: 'Что такое бюджет?',
-    options: ['План доходов и расходов', 'Кредитный лимит', 'Финансовая подушка безопасности'],
+    question: 'Что такое бюджет в FinTrackr?',
+    options: ['Лимиты по категориям', 'Тип счёта', 'Курс валюты'],
     correct: 0
   },
   {
-    question: 'Почему важно иметь резервный фонд?',
-    options: ['Для оплаты покупок по акциям', 'Для подстраховки на случай непредвидённых расходов', 'Для развлечений'],
+    question: 'Как часто стоит пересматривать цели?',
+    options: ['Раз в год', 'Каждый месяц/квартал', 'Никогда'],
     correct: 1
+  },
+  {
+    question: 'Что поможет избежать импульсивных расходов?',
+    options: ['Отдельная категория “подушки”', 'Скрывать операции', 'Увеличивать лимиты'],
+    correct: 0
   }
 ];
 
-// Загружает прогресс уроков из localStorage
 function loadLessonProgress() {
   try {
     return JSON.parse(localStorage.getItem('eduProgress') || '{}');
@@ -37,18 +34,52 @@ function loadLessonProgress() {
   }
 }
 
-// Сохраняет прогресс уроков
 function saveLessonProgress(progress) {
   localStorage.setItem('eduProgress', JSON.stringify(progress));
 }
 
-// Отображает список уроков с кнопкой завершения
+function loadQuizStats() {
+  try {
+    return JSON.parse(localStorage.getItem('eduQuizStats') || '{"correct":0,"answered":0}');
+  } catch (e) {
+    return { correct: 0, answered: 0 };
+  }
+}
+
+function saveQuizStats(stats) {
+  localStorage.setItem('eduQuizStats', JSON.stringify(stats));
+}
+
+function updateEducationStats() {
+  const progress = loadLessonProgress();
+  const quizStats = loadQuizStats();
+  const totalLessons = lessons.length;
+  const completed = Object.values(progress).filter(Boolean).length;
+  const completionPercent = totalLessons ? Math.round((completed / totalLessons) * 100) : 0;
+  const accuracy = quizStats.answered ? Math.round((quizStats.correct / quizStats.answered) * 100) : 0;
+
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  set('educationHeroTag', `${totalLessons} уроков`);
+  set('educationHeroQuizTag', `${accuracy}% точность квиза`);
+  set('educationHeroProgress', `${completionPercent}%`);
+  set('educationHeroNote', completed ? `Завершено уроков: ${completed}` : 'Нет завершённых уроков');
+
+  set('educationMetricLessons', totalLessons);
+  set('educationMetricCompleted', completed);
+  set('educationMetricAccuracy', `${accuracy}%`);
+  set('educationMetricQuiz', quizQuestions.length);
+}
+
 function renderLessons() {
   const container = document.getElementById('lessonsContainer');
   if (!container) return;
   const progress = loadLessonProgress();
   container.innerHTML = '';
-  lessons.forEach(lesson => {
+  lessons.forEach((lesson) => {
     const card = document.createElement('div');
     card.className = 'lesson-card';
     const h3 = document.createElement('h3');
@@ -56,77 +87,81 @@ function renderLessons() {
     const desc = document.createElement('p');
     desc.textContent = lesson.description;
     const status = document.createElement('p');
-    status.style.fontWeight = '600';
+    status.className = 'muted-label';
     const btn = document.createElement('button');
     btn.className = 'btn-primary';
+
     if (progress[lesson.id]) {
-      status.textContent = '✔ Завершено';
+      status.textContent = 'Урок завершён';
       status.style.color = 'var(--primary)';
-      btn.textContent = 'Повторить';
+      btn.textContent = 'Снять отметку';
     } else {
-      status.textContent = 'Еще не завершён';
+      status.textContent = 'Не пройден';
       status.style.color = 'var(--danger)';
-      btn.textContent = 'Отметить завершённым';
+      btn.textContent = 'Отметить как пройденный';
     }
-    btn.style.marginTop = '0.5rem';
+
     btn.addEventListener('click', () => {
-      const progress = loadLessonProgress();
-      progress[lesson.id] = !progress[lesson.id];
-      saveLessonProgress(progress);
+      const updated = loadLessonProgress();
+      updated[lesson.id] = !updated[lesson.id];
+      saveLessonProgress(updated);
       renderLessons();
+      updateEducationStats();
     });
-    card.appendChild(h3);
-    card.appendChild(desc);
-    card.appendChild(status);
-    card.appendChild(btn);
+
+    card.append(h3, desc, status, btn);
     container.appendChild(card);
   });
 }
 
-// Отображает викторину
 function renderQuiz() {
   const container = document.getElementById('quizContainer');
   if (!container) return;
   container.innerHTML = '';
   quizQuestions.forEach((q, idx) => {
-    const qDiv = document.createElement('div');
-    qDiv.className = 'quiz-question';
-    const qTitle = document.createElement('p');
-    qTitle.textContent = `${idx + 1}. ${q.question}`;
-    qTitle.style.fontWeight = '600';
-    qDiv.appendChild(qTitle);
-    const optionsList = document.createElement('ul');
-    optionsList.style.listStyle = 'none';
-    optionsList.style.paddingLeft = '0';
+    const block = document.createElement('div');
+    block.className = 'quiz-question';
+    const title = document.createElement('p');
+    title.textContent = `${idx + 1}. ${q.question}`;
+    title.style.fontWeight = '600';
+    block.appendChild(title);
+    const list = document.createElement('ul');
+    list.style.listStyle = 'none';
+    list.style.padding = '0';
+
     q.options.forEach((opt, optIdx) => {
       const li = document.createElement('li');
       li.style.marginBottom = '0.5rem';
       const btn = document.createElement('button');
+      btn.className = 'btn-secondary';
       btn.textContent = opt;
-      btn.className = 'btn-primary';
-      btn.style.fontSize = '0.9rem';
       btn.addEventListener('click', () => {
-        // При выборе варианта показываем подсказку
         const correct = optIdx === q.correct;
+        const stats = loadQuizStats();
+        stats.answered += 1;
+        if (correct) stats.correct += 1;
+        saveQuizStats(stats);
+        li.querySelectorAll('span').forEach((s) => s.remove());
         const result = document.createElement('span');
-        result.textContent = correct ? ' ✔ Верно' : ' ✖ Неверно';
-        result.style.marginLeft = '0.5rem';
-        result.style.color = correct ? 'green' : 'red';
-        // Удаляем предыдущие метки
-        li.querySelectorAll('span').forEach(s => s.remove());
+        result.textContent = correct ? ' — верно' : ' — неверно';
+        result.style.marginLeft = '0.4rem';
+        result.style.color = correct ? 'var(--primary)' : 'var(--danger)';
         li.appendChild(result);
+        updateEducationStats();
       });
       li.appendChild(btn);
-      optionsList.appendChild(li);
+      list.appendChild(li);
     });
-    qDiv.appendChild(optionsList);
-    container.appendChild(qDiv);
+
+    block.appendChild(list);
+    container.appendChild(block);
   });
 }
 
 function initEducationPage() {
   renderLessons();
   renderQuiz();
+  updateEducationStats();
 }
 
 if (document.readyState !== 'loading') {

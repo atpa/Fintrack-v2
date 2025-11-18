@@ -197,16 +197,29 @@
     - Разные стили иконок
     - **Решение:** Использовать единый icon set (например, Feather Icons)
 
-31. **Типографика**
-    - Неконсистентные размеры шрифтов
-    - **Решение:** Создать типографическую шкалу
+31. **Регулярки**
+    - Требуется синхронизация списков подписок
+    - **Решение:** внедрить консистентную вёрстку
 
-32. **�������/����/��������������/�������� - ������������ workspace**
-    - ���������� �������� ���������� layout, ����� �� hero/metrics/a11y
-    - ������ �������� accounts/dashboard: hero, metrics-grid, responsive panels
-    - **�������:** �������� workspace-shell, формы, responsive таблицы
-    - [x] 2025-11-18: �������� budgets.html, goals.html, planned.html, recurring.html + JS metrics
+32. **Бюджеты/цели/планируемые/регулярные — переработка workspace**
+    - Старые страницы не поддерживали новый layout, отсутствовали hero/metrics/a11y
+    - Нужно выдержать стиль accounts/dashboard: hero, metrics-grid, responsive panels
+    - **Решение:** добавить workspace-shell, формы и адаптивные таблицы
+    - [x] 2025-11-18: обновлены budgets.html, goals.html, planned.html, recurring.html + JS метрики
 
+
+
+33. **Сервисы (education/premium/settings) - обновление workspace**
+    - Разделы сервисов использовали старый layout без hero/metrics
+    - Добавлены новые hero, метрики, панели и переведены скрипты
+    - **Решение:** унификация education/premium/settings под workspace-shell
+    - [x] 2025-11-18: обновлены education.html/js, premium.html/js, settings.html/js
+
+34. **Аналитика (reports/forecast/rules) - единый workspace**
+    - Страницы аналитики не соответствовали новому shell и содержали битые навигации
+    - Добавлены hero, метрики и панели, переведены JS для кириллицы
+    - **Решение:** унификация reports/forecast/rules + обновление графиков и таблиц
+    - [x] 2025-11-18: обновлены reports.html/js, forecast.html/js, rules.html/js
 
 ## База данных проблемы
 
@@ -400,4 +413,3 @@
 6. **UI/UX Polish & Theming** (#24, #26, #28, #29, #30) — закончить responsive‑таблицы, тёмную тему design-system, обновить иконки и микроанимации.
 7. **Testing & Automation** (#31, #36, #44, #45, #46, #47) — поднять покрытие Jest, добавить integration + Playwright сценарии, настроить отчёты и npm-скрипты.
 8. **Delivery, Infra & Docs** (#36, #37, #38, #39, #40, #41, #42, #43, #48, #49, #50, #51) — закрыть сборщик/PWA, нормализовать env-скрипты, добавить Docker + CI/CD и обновить API/README/ER.
-
