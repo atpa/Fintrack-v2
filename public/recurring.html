@@ -1,64 +1,178 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FinTrackr – Повторяющиеся операции</title>
-  <link rel="stylesheet" href="css/design-system.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
-  <script defer src="js/utils/ui.js"></script>
-  <script defer src="js/recurring.js"></script>
-</head>
-<body class="workspace-page" data-page-title="Регулярные" data-page-subtitle="Автоматические платежи и подписки">
-  <header>
-    <div class="brand visually-hidden">
-      <a href="dashboard.html">FinTrackr</a>
-    </div>
-    <button class="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTrackr - �������騥�� ����樨</title>
+    <link rel="stylesheet" href="css/design-system.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive-tables.css" />
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="js/utils/ui.js"></script>
+    <script defer src="js/recurring.js"></script>
+  </head>
+  <body
+    class="workspace-page"
+    data-page-title="�������"
+    data-page-subtitle="��⮬���᪨� ���⥦� � �����᪨"
+  >
+    <header>
+      <div class="brand visually-hidden">
+        <a href="dashboard.html">FinTrackr</a>
+      </div>
+      <button class="burger" aria-label="����"><span></span><span></span><span></span></button>
+    </header>
 
-  </header>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="������� ��������">
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="���� �ਫ������">
+          <div class="nav-section">
+            <h3 class="nav-section-title">�᭮����</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">��衮�</span></a></li>
+              <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">����</span></a></li>
+              <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">����樨</span></a></li>
+              <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">��⥣�ਨ</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����஢����</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">����</span></a></li>
+              <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">����</span></a></li>
+              <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">������㥬�</span></a></li>
+              <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">�������</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����⨪�</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="reports.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">������</span></a></li>
+              <li class="nav-item"><a href="forecast.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">�ண����</span></a></li>
+              <li class="nav-item"><a href="rules.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">�ࠢ���</span></a></li>
+            </ul>
+          </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�������⥫쭮</h3>
+            <ul class="nav-list">
+              <li class="nav-item"><a href="education.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">���祭��</span></a></li>
+              <li class="nav-item"><a href="premium.html" class="nav-link"><span class="nav-icon">?</span><span class="nav-label">�६��</span></a></li>
+              <li class="nav-item"><a href="settings.html" class="nav-link"><span class="nav-icon">??</span><span class="nav-label">����ன��</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </aside>
 
-  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Боковая навигация">
-    <!-- sidebar-top removed: logo moved to header; sidebar starts at header edge -->
-    <div class="sidebar-scroll">
-      <nav class="sidebar-nav" aria-label="Меню приложения">
-        <div class="nav-section">
-          <h3 class="nav-section-title">Основное</h3>
-          <ul class="nav-list">
-            <li class="nav-item"><a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-label">Дэшборд</span></a></li>
-            <li class="nav-item"><a href="accounts.html" class="nav-link"><span class="nav-icon">💼</span><span class="nav-label">Счёта</span></a></li>
-            <li class="nav-item"><a href="transactions.html" class="nav-link"><span class="nav-icon">🔁</span><span class="nav-label">Операции</span></a></li>
-            <li class="nav-item"><a href="categories.html" class="nav-link"><span class="nav-icon">🔖</span><span class="nav-label">Категории</span></a></li>
-          </ul>
-        </div>
-        <div class="nav-section">
-          <h3 class="nav-section-title">Планирование</h3>
-          <ul class="nav-list">
-            <li class="nav-item"><a href="budgets.html" class="nav-link"><span class="nav-icon">📊</span><span class="nav-label">Бюджеты</span></a></li>
-            <li class="nav-item"><a href="goals.html" class="nav-link"><span class="nav-icon">🎯</span><span class="nav-label">Цели</span></a></li>
-            <li class="nav-item"><a href="planned.html" class="nav-link"><span class="nav-icon">📅</span><span class="nav-label">Планируемые</span></a></li>
-            <li class="nav-item"><a href="recurring.html" class="nav-link"><span class="nav-icon">🔄</span><span class="nav-label">Регулярные</span></a></li>
-          </ul>
-        </div>
-        <div class="nav-section">
-          <h3 class="nav-section-title">Аналитика</h3>
-          <ul class="nav-list">
-            <li class="nav-item"><a href="reports.html" class="nav-link"><span class="nav-icon">📈</span><span class="nav-label">Отчёты</span></a></li>
-            <li class="nav-item"><a href="forecast.html" class="nav-link"><span class="nav-icon">🔮</span><span class="nav-label">Прогнозы</span></a></li>
-            <li class="nav-item"><a href="rules.html" class="nav-link"><span class="nav-icon">⚙️</span><span class="nav-label">Правила</span></a></li>
-          </ul>
-        </div>
-        <div class="nav-section">
-          <h3 class="nav-section-title">Дополнительно</h3>
-          <ul class="nav-list">
-            <li class="nav-item"><a href="education.html" class="nav-link"><span class="nav-icon">📚</span><span class="nav-label">Обучение</span></a></li>
-            <li class="nav-item"><a href="premium.html" class="nav-link"><span class="nav-icon">⭐</span><span class="nav-label">Премиум</span></a></li>
-            <li class="nav-item"><a href="settings.html" class="nav-link"><span class="nav-icon">🔧</span><span class="nav-label">Настройки</span></a></li>
-          </ul>
-        </div>
-      </nav>
-    </div>
-  </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
+    <main class="workspace-main workspace-shell" role="main" aria-label="�������騥�� ���⥦�">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">�������</p>
+            <h1>������ recurring платежи</h1>
+            <p class="hero-description">
+              ����������� подписки, коммуналку, кредиты � прочие повторяющиеся ����ы � одном
+              месте. ��ࢥ�� ���� ��������� �� மாதный бюджет.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="recurringHeroCountTag">0 ���� �ண����</span>
+              <span class="hero-pill hero-pill--soft" id="recurringHeroFastTag">0 �� �� 30 ����</span>
+            </div>
+          </div>
+          <div class="hero-balance-card">
+            <p class="muted-label">�������� �� �����</p>
+            <p class="hero-balance-value">
+              <span id="recurringHeroMonthly">0.00</span>
+              <span id="recurringHeroCurrency">?</span>
+            </p>
+            <p class="hero-note" id="recurringHeroNote">���������: 0</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="location.href='planned.html'">�������� ������</button>
+          <button class="btn-secondary btn-pill" onclick="document.getElementById('recurringTable').scrollIntoView({behavior: 'smooth'})">������� таблицу</button>
+        </div>
+      </section>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">�ਕ���� ����</p>
+          <p class="metric-value"><strong id="recurringMetricCount">0</strong></p>
+          <p class="metric-subtitle">��� recurring �����</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">��������� �� 30 ����</p>
+          <p class="metric-value"><strong id="recurringMetricMonthly">0</strong></p>
+          <p class="metric-subtitle">��������� платежи</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">�।��� ������</p>
+          <p class="metric-value"><strong id="recurringMetricAvgPeriod">0</strong> <span class="metric-unit">����</span></p>
+          <p class="metric-subtitle">���⥦�/��������</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">������� канал</p>
+          <p class="metric-value"><strong id="recurringMetricTop">0.00</strong></p>
+          <p class="metric-subtitle">��������� подписка</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel panel--stretch" aria-labelledby="recurringTableTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">��������</p>
+              <h2 id="recurringTableTitle">�������騥�� ����樨</h2>
+            </div>
+            <div class="panel-actions">
+              <span class="muted-label" id="recurringMonthlySummary">����㧪�...</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrapper responsive-table">
+              <table id="recurringTable">
+                <thead>
+                  <tr>
+                    <th>��������</th>
+                    <th>���. ������ (���)</th>
+                    <th>��������</th>
+                    <th>������� �� �����</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="4">����㧪�...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel" aria-labelledby="recurringChecklistTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">������</p>
+              <h2 id="recurringChecklistTitle">Checklist ��������</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <ul class="checklist">
+              <li>�������� ����ы �� ������ � planned.html</li>
+              <li>Проверьте перерасходы в budgets.html</li>
+              <li>������� автосписания на нужные счета</li>
+              <li>⚠️ Удалите дубликаты после миграции ����⥣��</li>
+            </ul>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 FinTrackr. �� �ࠢ� ���饭�.</p>
+    </footer>
+  </body>
+</html>

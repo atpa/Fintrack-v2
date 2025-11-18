@@ -13,6 +13,30 @@ const transactionsState = {
   categories: [],
 };
 
+function getWorkspaceCurrency() {
+  if (typeof window.getBalanceCurrency === 'function') {
+    return window.getBalanceCurrency();
+  }
+  if (typeof window.getReportCurrency === 'function') {
+    return window.getReportCurrency();
+  }
+  return 'USD';
+}
+
+function convertToWorkspace(amount, currency) {
+  const target = getWorkspaceCurrency();
+  const value = Number(amount) || 0;
+  if (typeof window.convertAmount === 'function') {
+    return window.convertAmount(value, currency || target, target);
+  }
+  return value;
+}
+
+function setSummaryText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
 const pagination = new Pagination({
   currentPage: 1,
   pageSize: 10,
@@ -27,6 +51,7 @@ function renderTransactions() {
   const listEl = document.getElementById('transactionsList');
   const tableBody = document.querySelector('#transactionsTable tbody');
   const items = pagination.paginate(transactionsState.filtered);
+  setSummaryText('transactionsFilteredCount', transactionsState.filtered.length);
 
   // Card list rendering if container exists
   if (listEl) {
@@ -150,6 +175,45 @@ function renderTransactions() {
   pagination.render(transactionsState.filtered.length);
 }
 
+function updateTransactionsSummary(startDate, endDate) {
+  const currency = getWorkspaceCurrency();
+  let income = 0;
+  let expense = 0;
+  transactionsState.filtered.forEach((tx) => {
+    const value = convertToWorkspace(tx.amount, tx.currency);
+    if (tx.type === 'income') {
+      income += value;
+    } else if (tx.type === 'expense') {
+      expense += Math.abs(value);
+    }
+  });
+  const count = transactionsState.filtered.length;
+  const avg = count ? (income + expense) / count : 0;
+  const net = income - expense;
+  let rangeLabel = 'За всё время';
+  if (startDate && endDate) {
+    rangeLabel = `${startDate} — ${endDate}`;
+  } else if (startDate) {
+    rangeLabel = `С ${startDate}`;
+  } else if (endDate) {
+    rangeLabel = `По ${endDate}`;
+  }
+
+  setSummaryText('transactionsHeroRange', rangeLabel);
+  setSummaryText('transactionsHeroNet', net.toFixed(2));
+  setSummaryText('transactionsHeroCurrencySymbol', currency);
+  setSummaryText('transactionsHeroCurrency', `Валюта: ${currency}`);
+  setSummaryText('transactionsHeroCount', `${count} операций`);
+
+  setSummaryText('transactionsMetricCount', count);
+  setSummaryText('transactionsMetricIncome', income.toFixed(2));
+  setSummaryText('transactionsMetricIncomeCurrency', currency);
+  setSummaryText('transactionsMetricExpense', expense.toFixed(2));
+  setSummaryText('transactionsMetricExpenseCurrency', currency);
+  setSummaryText('transactionsMetricAverage', avg.toFixed(2));
+  setSummaryText('transactionsMetricAverageCurrency', currency);
+}
+
 function applyFilters() {
   const start = document.getElementById('filterStart')?.value || '';
   const end = document.getElementById('filterEnd')?.value || '';
@@ -193,6 +257,7 @@ function applyFilters() {
   pagination.goToPage(1);
   window.allTransactions = transactionsState.all.slice();
   renderTransactions();
+  updateTransactionsSummary(start, end);
 }
 
 function populateSelect(select, items, getValue, getLabel) {

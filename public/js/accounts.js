@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Accounts management module
  * @module accounts
  */
@@ -10,6 +10,30 @@ const accountState = {
   all: [],
   filtered: [],
 };
+
+function getWorkspaceCurrency() {
+  if (typeof window.getBalanceCurrency === 'function') {
+    return window.getBalanceCurrency();
+  }
+  if (typeof window.getReportCurrency === 'function') {
+    return window.getReportCurrency();
+  }
+  return 'USD';
+}
+
+function convertToWorkspace(amount, currency) {
+  const target = getWorkspaceCurrency();
+  const value = Number(amount) || 0;
+  if (typeof window.convertAmount === 'function') {
+    return window.convertAmount(value, currency || target, target);
+  }
+  return value;
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
 
 // Инициализация пагинации с помощью утилиты
 const pagination = new Pagination({
@@ -28,6 +52,7 @@ function renderAccounts() {
 
   if (!list) return;
   list.innerHTML = '';
+  setText('accountsFilteredCount', accountState.filtered.length);
   
   if (!items.length) {
     const empty = document.createElement('div');
@@ -72,7 +97,9 @@ function renderAccounts() {
   });
 
   pagination.render(accountState.filtered.length);
-}function applyFilters() {
+}
+
+function applyFilters() {
   const search = document.getElementById('accountSearch')?.value.trim().toLowerCase() || '';
   const currency = document.getElementById('accountCurrencyFilter')?.value || '';
   accountState.filtered = accountState.all.filter((acc) => {
@@ -82,6 +109,7 @@ function renderAccounts() {
   });
   pagination.goToPage(1);
   renderAccounts();
+  updateAccountsSummary();
 }
 
 function bindFilters() {
@@ -178,6 +206,31 @@ async function initAccountsPage() {
   }
 }
 
+function updateAccountsSummary() {
+  const totalAccounts = accountState.all.length;
+  const targetCurrency = getWorkspaceCurrency();
+  const totalBalance = accountState.all.reduce(
+    (sum, acc) => sum + convertToWorkspace(acc.balance, acc.currency),
+    0
+  );
+  const positive = accountState.all.filter((acc) => Number(acc.balance) > 0).length;
+  const negative = accountState.all.filter((acc) => Number(acc.balance) < 0).length;
+  const average = totalAccounts ? totalBalance / totalAccounts : 0;
+
+  setText('accountsHeroBalance', totalBalance.toFixed(2));
+  setText('accountsHeroCurrency', targetCurrency);
+  setText('accountsHeroCurrencyTag', `Валюта: ${targetCurrency}`);
+  setText(
+    'accountsHeroHint',
+    totalAccounts ? `Счета: ${totalAccounts}` : 'Добавьте первый счёт'
+  );
+
+  setText('accountsMetricCount', totalAccounts);
+  setText('accountsMetricPositive', positive);
+  setText('accountsMetricNegative', negative);
+  setText('accountsMetricAverage', average.toFixed(2));
+  setText('accountsMetricCurrency', targetCurrency);
+}
 // Auto-init on DOM ready
 if (document.readyState !== 'loading') {
   initAccountsPage();

@@ -3,233 +3,282 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinTrackr – Плановые операции</title>
+    <title>FinTrackr - ������㥬� ����樨</title>
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
-  <script defer src="js/utils/ui.js"></script>
-  <script defer src="js/planned.js"></script>
+    <link rel="stylesheet" href="css/responsive-tables.css" />
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="js/utils/ui.js"></script>
+    <script defer src="js/planned.js"></script>
   </head>
-  <body class="workspace-page" data-page-title="Планируемые" data-page-subtitle="Запланируйте будущие транзакции">
+  <body
+    class="workspace-page"
+    data-page-title="������㥬�"
+    data-page-subtitle="���������� ���騥 �࠭���樨"
+  >
     <header>
       <div class="brand visually-hidden">
         <a href="dashboard.html">FinTrackr</a>
       </div>
-      <button class="burger" aria-label="Меню">
+      <button class="burger" aria-label="����">
         <span></span><span></span><span></span>
       </button>
     </header>
 
-    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Боковая навигация">
-      <!-- sidebar-top removed: logo moved to header; sidebar starts at header edge -->
-    <div class="sidebar-scroll">
-      <nav class="sidebar-nav" aria-label="Меню приложения">
-        <div class="nav-section">
-          <h3 class="nav-section-title">Основное</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="dashboard.html" class="nav-link"
-                ><span class="nav-icon">🏠</span
-                ><span class="nav-label">Дэшборд</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="accounts.html" class="nav-link"
-                ><span class="nav-icon">💼</span
-                ><span class="nav-label">Счёта</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="transactions.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Операции</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="categories.html" class="nav-link"
-                ><span class="nav-icon">🔖</span
-                ><span class="nav-label">Категории</span></a
-              >
-            </li>
-          </ul>
-        </div>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="������� ��������">
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="���� �ਫ������">
+          <div class="nav-section">
+            <h3 class="nav-section-title">�᭮����</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="dashboard.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">��衮�</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="accounts.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="transactions.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����樨</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="categories.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">��⥣�ਨ</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Планирование</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="budgets.html" class="nav-link"
-                ><span class="nav-icon">📊</span
-                ><span class="nav-label">Бюджеты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="goals.html" class="nav-link"
-                ><span class="nav-icon">🎯</span
-                ><span class="nav-label">Цели</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="planned.html" class="nav-link"
-                ><span class="nav-icon">📅</span
-                ><span class="nav-label">Планируемые</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="recurring.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Регулярные</span></a
-              >
-            </li>
-          </ul>
-        </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����஢����</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="budgets.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="goals.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="planned.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">������㥬�</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="recurring.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�������</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Аналитика</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="reports.html" class="nav-link"
-                ><span class="nav-icon">📈</span
-                ><span class="nav-label">Отчёты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="forecast.html" class="nav-link"
-                ><span class="nav-icon">🔮</span
-                ><span class="nav-label">Прогнозы</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="rules.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Правила</span></a
-              >
-            </li>
-          </ul>
-        </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����⨪�</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="reports.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">������</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="forecast.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�ண����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="rules.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�ࠢ���</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Дополнительно</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="education.html" class="nav-link"
-                ><span class="nav-icon">📚</span
-                ><span class="nav-label">Обучение</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="premium.html" class="nav-link"
-                ><span class="nav-icon">⭐</span
-                ><span class="nav-label">Премиум</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="settings.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Настройки</span></a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�������⥫쭮</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="education.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">���祭��</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="premium.html" class="nav-link"
+                  ><span class="nav-icon">?</span><span class="nav-label">�६��</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="settings.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����ன��</span></a
+                >
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main>
-      <!-- Форма для создания плановой или цикличной операции -->
-      <section class="card">
-        <h2>Создать плановую операцию</h2>
-        <p>
-          Запланируйте будущие доходы и расходы: укажите дату начала, частоту и
-          сумму. Система автоматически добавит операцию в вашу статистику по
-          мере наступления.
-        </p>
-        <form id="addPlannedForm">
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem">
-            <label style="flex: 1 1 150px">
-              Дата начала
-              <input type="date" id="plannedStart" required />
-            </label>
-            <label style="flex: 1 1 150px">
-              Счёт
-              <select id="plannedAccount" required></select>
-            </label>
-            <label style="flex: 1 1 150px">
-              Категория
-              <select id="plannedCategory" required></select>
-            </label>
-            <label style="flex: 1 1 150px">
-              Тип
-              <select id="plannedType" required>
-                <option value="income">Доход</option>
-                <option value="expense">Расход</option>
-              </select>
-            </label>
-            <label style="flex: 1 1 150px">
-              Сумма
-              <input
-                type="number"
-                id="plannedAmount"
-                step="0.01"
-                min="0"
-                required
-              />
-            </label>
-            <label style="flex: 1 1 150px">
-              Валюта
-              <select id="plannedCurrency" required>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="PLN">PLN</option>
-                <option value="RUB">RUB</option>
-              </select>
-            </label>
-            <label style="flex: 1 1 200px">
-              Частота
-              <select id="plannedFrequency" required>
-                <option value="daily">Ежедневно</option>
-                <option value="weekly">Еженедельно</option>
-                <option value="monthly">Ежемесячно</option>
-                <option value="yearly">Ежегодно</option>
-              </select>
-            </label>
-            <label style="flex: 1 1 200px">
-              Примечание
-              <input type="text" id="plannedNote" />
-            </label>
+
+    <main class="workspace-main workspace-shell" role="main" aria-label="���������� ����樨">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">������㥬� ����樨</p>
+            <h1>�������� recurring ����ы</h1>
+            <p class="hero-description">
+              ������� регулярные ����� � пополнения, ����� ������ счета и категории.
+              ����������� ��������� �� ամսный ���� �������� ���կй.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="plannedHeroNextTag">��� ��������</span>
+              <span class="hero-pill hero-pill--soft" id="plannedHeroSplitTag">0% ��室</span>
+            </div>
           </div>
-          <button type="submit" class="btn-primary" style="margin-top: 1rem">
-            Добавить
-          </button>
-        </form>
+          <div class="hero-balance-card">
+            <p class="muted-label">������� ��������</p>
+            <p class="hero-balance-value">
+              <span id="plannedHeroMonthly">0.00</span>
+              <span id="plannedHeroCurrency">USD</span>
+            </p>
+            <p class="hero-note" id="plannedHeroNote">������� �������� �� ��࠭ॣ.</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('plannedStart').focus()">+ �������� ������</button>
+          <button class="btn-secondary btn-pill" onclick="location.href='recurring.html'">������� �����</button>
+        </div>
       </section>
-      <!-- Список запланированных операций -->
-      <section class="card">
-        <h2>Запланированные операции</h2>
-        <table id="plannedTable">
-          <thead>
-            <tr>
-              <th>Дата начала</th>
-              <th>Частота</th>
-              <th>Счёт</th>
-              <th>Категория</th>
-              <th>Тип</th>
-              <th>Сумма</th>
-              <th>Примечание</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="7">Загрузка...</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">�ਕ���� ����</p>
+          <p class="metric-value"><strong id="plannedMetricTotal">0</strong></p>
+          <p class="metric-subtitle">����� recurring ����樨</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">����室</p>
+          <p class="metric-value"><strong id="plannedMetricIncome">0</strong></p>
+          <p class="metric-subtitle">��������� пополнения</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">���室</p>
+          <p class="metric-value"><strong id="plannedMetricExpense">0</strong></p>
+          <p class="metric-subtitle">����࠭�� списания</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">����� κ���</p>
+          <p class="metric-value"><strong id="plannedMetricAccounts">0</strong></p>
+          <p class="metric-subtitle">������������ ����</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel" aria-labelledby="plannedFormTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">������ recurring</p>
+              <h2 id="plannedFormTitle">�������� ������ ����室</h2>
+            </div>
+          </div>
+          <form id="addPlannedForm" class="panel-body">
+            <div class="form-grid">
+              <div class="form-field form-field--short">
+                <label for="plannedStart">��� ��砫�</label>
+                <input type="date" id="plannedStart" required />
+              </div>
+              <div class="form-field">
+                <label for="plannedAccount">����</label>
+                <select id="plannedAccount" required></select>
+              </div>
+              <div class="form-field">
+                <label for="plannedCategory">��⥣���</label>
+                <select id="plannedCategory" required></select>
+              </div>
+              <div class="form-field form-field--short">
+                <label for="plannedType">���</label>
+                <select id="plannedType" required>
+                  <option value="income">��室</option>
+                  <option value="expense">���室</option>
+                </select>
+              </div>
+              <div class="form-field form-field--short">
+                <label for="plannedAmount">�㬬�</label>
+                <input type="number" id="plannedAmount" step="0.01" min="0" required />
+              </div>
+              <div class="form-field form-field--short">
+                <label for="plannedCurrency">�����</label>
+                <select id="plannedCurrency" required>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PLN">PLN</option>
+                  <option value="RUB">RUB</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="plannedFrequency">�����</label>
+                <select id="plannedFrequency" required>
+                  <option value="daily">���������</option>
+                  <option value="weekly">��������쭮</option>
+                  <option value="monthly">�������筮</option>
+                  <option value="yearly">��������</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="plannedNote">�ਬ�砭��</label>
+                <input type="text" id="plannedNote" placeholder="��ࠧ�����, �����, ID подписки" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">��������</button>
+              <p class="form-hint">�������� ��� ��室� �������� ��� �����.</p>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel panel--stretch" aria-labelledby="plannedTableTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">�ண������</p>
+              <h2 id="plannedTableTitle">������ recurring ����樨</h2>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrapper responsive-table">
+              <table id="plannedTable">
+                <thead>
+                  <tr>
+                    <th>��� ��砫�</th>
+                    <th>�����</th>
+                    <th>����</th>
+                    <th>��⥣���</th>
+                    <th>���</th>
+                    <th>�㬬�</th>
+                    <th>�բ�砭��</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="7">����㧪�...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
+
     <footer>
-      <p>&copy; 2025 FinTrackr. Все права защищены.</p>
+      <p>&copy; 2025 FinTrackr. �� �ࠢ� ���饭�.</p>
     </footer>
   </body>
 </html>

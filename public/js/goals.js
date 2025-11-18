@@ -7,6 +7,13 @@
  * @param {Array} goals
  * @param {HTMLElement} container
  */
+function setGoalsText(id, value) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = value;
+  }
+}
+
 function renderGoals(goals, container) {
   container.innerHTML = '';
   if (!goals.length) {
@@ -44,11 +51,49 @@ function renderGoals(goals, container) {
   });
 }
 
+function updateGoalsDashboard(goals) {
+  const total = goals.length;
+  const totals = goals.reduce(
+    (acc, goal) => {
+      const current = Number(goal.current_amount || 0);
+      const target = Number(goal.target_amount || 0);
+      acc.current += current;
+      acc.target += target;
+      if (target > 0 && current >= target) {
+        acc.completed += 1;
+      }
+      if (goal.deadline) {
+        const daysDiff = Math.ceil(
+          (new Date(goal.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        );
+        if (daysDiff >= 0 && daysDiff <= 30) {
+          acc.upcoming += 1;
+        }
+      }
+      return acc;
+    },
+    { current: 0, target: 0, completed: 0, upcoming: 0 }
+  );
+  const avgTicket = total ? totals.target / total : 0;
+  const progress = totals.target > 0 ? (totals.current / totals.target) : 0;
+
+  setGoalsText('goalsHeroActiveTag', `${total} ����`);
+  setGoalsText('goalsHeroCompletedTag', `${totals.completed} ���������`);
+  setGoalsText('goalsHeroProgress', `${Math.round(progress * 100)}%`);
+  setGoalsText('goalsHeroNote', `�������: ${totals.current.toFixed(0)} / ${totals.target.toFixed(0)}`);
+
+  setGoalsText('goalsMetricCount', total);
+  setGoalsText('goalsMetricCompleted', totals.completed);
+  setGoalsText('goalsMetricUpcoming', totals.upcoming);
+  setGoalsText('goalsMetricAvgTicket', avgTicket.toFixed(0));
+}
+
 async function initGoalsPage() {
   const grid = document.getElementById('goalsGrid');
   if (!grid) return;
   let goals = await fetchData('/api/goals');
   renderGoals(goals, grid);
+  updateGoalsDashboard(goals);
   const form = document.getElementById('addGoalForm');
   if (form) {
     form.addEventListener('submit', async e => {
@@ -73,6 +118,7 @@ async function initGoalsPage() {
         const created = await resp.json();
         goals.push(created);
         renderGoals(goals, grid);
+        updateGoalsDashboard(goals);
         form.reset();
       } catch (err) {
         console.error(err);

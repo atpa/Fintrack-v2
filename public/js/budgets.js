@@ -1,12 +1,12 @@
 /**
- * Функции для управления бюджетами: отображение и установка лимитов.
+ * �㭪樨 ��� �ࠢ����� ��⠬�: �⮡ࠦ���� � ��⠭���� ����⮢.
  */
 
 /**
- * Предварительно вычислить доходы по месяцам для оптимизации
- * @param {Array} transactions - Массив транзакций
- * @param {string} targetCurrency - Целевая валюта
- * @returns {Map} - Map месяц → общая сумма доходов
+ * �।���⥫쭮 ���᫨�� ��室� �� ����栬 ��� ��⨬���樨
+ * @param {Array} transactions - ���ᨢ �࠭���権
+ * @param {string} targetCurrency - ������� �����
+ * @returns {Map} - Map �����  ���� �㬬� ��室��
  */
 function calculateMonthlyIncomes(transactions, targetCurrency = 'USD') {
   const incomesByMonth = new Map();
@@ -29,29 +29,68 @@ function calculateMonthlyIncomes(transactions, targetCurrency = 'USD') {
   return incomesByMonth;
 }
 
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = value;
+  }
+}
+
 function renderBudgets(budgets, categories, tbody, transactions) {
+  const workspaceCurrency = typeof getBalanceCurrency === 'function' ? getBalanceCurrency() : 'USD';
+  const stats = {
+    count: budgets.length,
+    overspent: 0,
+    percentBased: 0,
+    ratioSum: 0,
+    ratioCount: 0,
+    allocated: 0,
+    spent: 0,
+    uniqueMonths: new Set(),
+  };
+
   tbody.innerHTML = '';
+
+  if (!budgets.length) {
+    const emptyRow = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.textContent = '��� �������� ���';
+    emptyRow.appendChild(td);
+    tbody.appendChild(emptyRow);
+    updateBudgetsInsights({
+      ...stats,
+      workspaceCurrency,
+      avgUtilization: 0,
+      percentShare: 0,
+      uniqueMonthsCount: 0,
+    });
+    setText('budgetsTableHint', '���������: 0');
+    return;
+  }
   
-  // Предварительно вычисляем доходы по месяцам для всех валют
+  // �।���⥫쭮 ����塞 ��室� �� ����栬 ��� ��� �����
   const incomesCacheByCur = new Map();
   
   budgets.forEach(budget => {
     const tr = document.createElement('tr');
     const cat = categories.find(c => c.id === budget.category_id);
     const categoryTd = document.createElement('td');
-    categoryTd.textContent = cat ? cat.name : '—';
+    categoryTd.textContent = cat ? cat.name : '-';
     const monthTd = document.createElement('td');
-    monthTd.textContent = budget.month;
+    monthTd.textContent = budget.month || '-';
     const limitTd = document.createElement('td');
     const spentTd = document.createElement('td');
     const progressTd = document.createElement('td');
     let displayLimit;
     let dynamicLimit = Number(budget.limit) || 0;
     const bCur = budget.currency || 'USD';
+    stats.uniqueMonths.add(budget.month);
     
-    // Если бюджет процентный, используем кэшированные доходы
+    // �᫨ ��� ��業��, �ᯮ��㥬 ���஢���� ��室�
     if (budget.type === 'percent' && budget.percent != null) {
-      // Получаем или создаем кэш доходов для этой валюты
+      stats.percentBased += 1;
+      // ����砥� ��� ᮧ���� ��� ��室�� ��� �⮩ ������
       if (!incomesCacheByCur.has(bCur)) {
         incomesCacheByCur.set(bCur, calculateMonthlyIncomes(transactions, bCur));
       }
@@ -65,9 +104,10 @@ function renderBudgets(budgets, categories, tbody, transactions) {
       displayLimit = typeof formatCurrency === 'function' ? formatCurrency(budget.limit, bCur) : `${Number(budget.limit).toFixed(2)} ${bCur}`;
     }
     limitTd.textContent = displayLimit;
-    const spentText = typeof formatCurrency === 'function' ? formatCurrency(budget.spent, bCur) : `${Number(budget.spent).toFixed(2)} ${bCur}`;
+    const spentValue = Number(budget.spent) || 0;
+    const spentText = typeof formatCurrency === 'function' ? formatCurrency(spentValue, bCur) : `${spentValue.toFixed(2)} ${bCur}`;
     spentTd.textContent = spentText;
-    const percentage = dynamicLimit > 0 ? Math.min(100, (Number(budget.spent) / dynamicLimit) * 100) : 0;
+    const percentage = dynamicLimit > 0 ? Math.min(100, (spentValue / dynamicLimit) * 100) : 0;
     const barContainer = document.createElement('div');
     barContainer.style.backgroundColor = '#e2e8f0';
     barContainer.style.borderRadius = '4px';
@@ -82,7 +122,58 @@ function renderBudgets(budgets, categories, tbody, transactions) {
     progressTd.appendChild(barContainer);
     tr.append(categoryTd, monthTd, limitTd, spentTd, progressTd);
     tbody.appendChild(tr);
+
+    if (dynamicLimit > 0) {
+      const ratio = spentValue / dynamicLimit;
+      stats.ratioSum += ratio;
+      stats.ratioCount += 1;
+      if (ratio > 1) {
+        stats.overspent += 1;
+      }
+    }
+    const convertedLimit = typeof convertAmount === 'function' ? convertAmount(dynamicLimit, bCur, workspaceCurrency) : dynamicLimit;
+    const convertedSpent = typeof convertAmount === 'function' ? convertAmount(spentValue, bCur, workspaceCurrency) : spentValue;
+    stats.allocated += convertedLimit;
+    stats.spent += convertedSpent;
   });
+
+  setText('budgetsTableHint', `���������: ${stats.count}`);
+  const avgUtilization = stats.ratioCount ? stats.ratioSum / stats.ratioCount : 0;
+  const percentShare = stats.count ? stats.percentBased / stats.count : 0;
+  updateBudgetsInsights({
+    ...stats,
+    avgUtilization,
+    percentShare,
+    uniqueMonthsCount: stats.uniqueMonths.size,
+    workspaceCurrency,
+  });
+}
+
+function updateBudgetsInsights(stats) {
+  const currency = stats.workspaceCurrency || 'USD';
+  const utilizationValue = Math.round((stats.avgUtilization || 0) * 100);
+  const percentShareValue = Math.round((stats.percentShare || 0) * 100);
+  const formattedAllocated =
+    typeof formatCompactCurrency === 'function'
+      ? formatCompactCurrency(stats.allocated, currency)
+      : formatCurrency(stats.allocated, currency);
+  const formattedSpent = typeof formatCurrency === 'function'
+    ? formatCurrency(stats.spent, currency)
+    : `${Number(stats.spent || 0).toFixed(2)} ${currency}`;
+
+  setText('budgetsHeroAllocated', formattedAllocated);
+  setText('budgetsHeroCurrency', currency);
+  setText(
+    'budgetsHeroNote',
+    `������� ${formattedSpent} (${utilizationValue}% �� ����஢����)`
+  );
+  setText('budgetsHeroPeriodTag', `${stats.uniqueMonthsCount || 0} ����.`);
+  setText('budgetsHeroPercentTag', `${percentShareValue}% ��業�`);
+
+  setText('budgetsMetricCount', stats.count || 0);
+  setText('budgetsMetricOverspent', stats.overspent || 0);
+  setText('budgetsMetricUtilization', `${utilizationValue}%`);
+  setText('budgetsMetricPercentShare', `${percentShareValue}%`);
 }
 
 async function initBudgetsPage() {
@@ -93,7 +184,8 @@ async function initBudgetsPage() {
     fetchData('/api/categories'),
     fetchData('/api/transactions')
   ]);
-  renderBudgets(budgets, categories, tbody, transactions);
+  let transactionsCache = transactions;
+  renderBudgets(budgets, categories, tbody, transactionsCache);
   // Populate category dropdown for budget form
   const catSelect = document.getElementById('budgetCategory');
   if (catSelect) {
@@ -108,7 +200,7 @@ async function initBudgetsPage() {
   // Handle budget limit form
   const form = document.getElementById('addBudgetForm');
   if (form) {
-    // Переключение отображения полей лимита и процента в зависимости от типа
+    // ��४��祭�� �⮡ࠦ���� ����� ����� � ��業� � ����ᨬ��� �� ⨯�
     const typeSelect = document.getElementById('budgetType');
     const limitContainer = document.getElementById('limitContainer');
     const percentContainer = document.getElementById('percentContainer');
@@ -142,15 +234,15 @@ async function initBudgetsPage() {
         currency: document.getElementById('budgetCurrency')?.value || 'USD'
       };
 
-      // Клиентская валидация
+      // ������᪠� ��������
       if (!payload.month) {
-        monthInput.setCustomValidity('Выберите месяц');
+        monthInput.setCustomValidity('�롥�� �����');
         monthInput.reportValidity();
         setTimeout(() => monthInput.setCustomValidity(''), 1500);
         return;
       }
       if (!payload.category_id) {
-        catSel.setCustomValidity('Выберите категорию');
+        catSel.setCustomValidity('�롥�� ��⥣���');
         catSel.reportValidity();
         setTimeout(() => catSel.setCustomValidity(''), 1500);
         return;
@@ -158,17 +250,17 @@ async function initBudgetsPage() {
       if (payload.type === 'percent') {
         const p = Number(payload.percent);
         if (!isFinite(p) || p < 0 || p > 100) {
-          percentInput.setCustomValidity('Процент должен быть числом от 0 до 100');
+          percentInput.setCustomValidity('��業� ������ ���� �᫮� �� 0 �� 100');
           percentInput.reportValidity();
           setTimeout(() => percentInput.setCustomValidity(''), 1500);
           return;
         }
-        // для процентного лимита поле limit можно игнорировать/очищать
+        // ��� ��業⭮�� ����� ���� limit ����� �����஢���/�����
         payload.limit = 0;
       } else {
         const l = Number(payload.limit);
         if (!isFinite(l) || l < 0) {
-          limitInput.setCustomValidity('Лимит должен быть числом 0 или больше');
+          limitInput.setCustomValidity('����� ������ ���� �᫮� 0 ��� �����');
           limitInput.reportValidity();
           setTimeout(() => limitInput.setCustomValidity(''), 1500);
           return;
@@ -183,22 +275,22 @@ async function initBudgetsPage() {
         });
         if (!resp.ok) {
           const err = await resp.json();
-          alert('Ошибка: ' + (err.error || 'не удалось сохранить бюджет'));
+          alert('�訡��: ' + (err.error || '�� 㤠���� ��࠭��� ���'));
           return;
         }
         const updated = await resp.json();
-        // Если бюджет существует, обновляем, иначе добавляем
+        // �᫨ ��� �������, ������塞, ���� ������塞
         const idx = budgets.findIndex(b => b.id === updated.id);
         if (idx !== -1) {
           budgets[idx] = updated;
         } else {
           budgets.push(updated);
         }
-        renderBudgets(budgets, categories, tbody);
+        renderBudgets(budgets, categories, tbody, transactionsCache);
         form.reset();
       } catch (err) {
         console.error(err);
-        alert('Ошибка сети');
+        alert('�訡�� ��');
       }
     });
   }

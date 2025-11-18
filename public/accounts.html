@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -72,16 +72,68 @@
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
-    <main class="workspace-main" role="main" aria-label="Управление счетами">
-      <section class="panel-grid">
-        <article class="card" aria-labelledby="addAccountTitle">
-          <div class="card-header">
-            <div>
-              <h2 id="addAccountTitle">Добавить счёт</h2>
-              <p class="card-subtitle">Синхронизируйте наличные, карты и вклады</p>
+    <main class="workspace-main workspace-shell" role="main" aria-label="Управление счетами">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Счета</p>
+            <h1>Все счета в одном месте</h1>
+            <p class="hero-description">Создавайте счета, фильтруйте их по валютам и отслеживайте текущие балансы.</p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="accountsHeroCurrencyTag">Валюта: USD</span>
+              <span class="hero-pill hero-pill--soft">В работе</span>
             </div>
           </div>
-          <form id="addAccountForm">
+          <div class="hero-balance-card">
+            <p class="muted-label">Консолидированный баланс</p>
+            <p class="hero-balance-value">
+              <span id="accountsHeroBalance">0.00</span>
+              <span id="accountsHeroCurrency">USD</span>
+            </p>
+            <p class="hero-note" id="accountsHeroHint">Нет активных счетов</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('accName').focus()">+ Новый счёт</button>
+          <button class="btn-secondary btn-pill" onclick="location.href='transactions.html'">Журнал операций</button>
+        </div>
+      </section>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">Всего счетов</p>
+          <p class="metric-value"><strong id="accountsMetricCount">0</strong></p>
+          <p class="metric-subtitle">Поддерживаются онлайн и офлайн счета</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Положительный баланс</p>
+          <p class="metric-value"><strong id="accountsMetricPositive">0</strong></p>
+          <p class="metric-subtitle">Количество счетов &gt; 0</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Отрицательный баланс</p>
+          <p class="metric-value"><strong id="accountsMetricNegative">0</strong></p>
+          <p class="metric-subtitle">Контролируйте перерасход</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Средний баланс</p>
+          <p class="metric-value">
+            <strong id="accountsMetricAverage">0.00</strong>
+            <span class="currency-code" id="accountsMetricCurrency">USD</span>
+          </p>
+          <p class="metric-subtitle">По всем активным счетам</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <article class="panel" aria-labelledby="addAccountTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Создание счёта</p>
+              <h2 id="addAccountTitle">Добавить счёт</h2>
+            </div>
+          </div>
+          <form id="addAccountForm" class="panel-body">
             <div class="form-grid">
               <div class="form-field">
                 <label for="accName">Название</label>
@@ -105,70 +157,73 @@
               </div>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn-primary">Добавить счёт</button>
+              <button type="submit" class="btn-primary">Сохранить</button>
             </div>
           </form>
         </article>
 
-        <article class="card card--wide" aria-labelledby="accountsListTitle">
-          <div class="card-header">
+        <article class="panel" aria-labelledby="accountsListTitle">
+          <div class="panel-header">
             <div>
-              <h2 id="accountsListTitle">Мои кошельки</h2>
-              <p class="card-subtitle">Фильтруйте по валютам и отслеживайте остатки</p>
+              <p class="muted-label">Коллекция счетов</p>
+              <h2 id="accountsListTitle">Счета</h2>
             </div>
-            <a class="link-ghost" href="transactions.html">Перейти к операциям →</a>
+            <a class="link-ghost" href="transactions.html">История операций →</a>
           </div>
-          <div class="filter-grid">
-            <div class="form-field">
-              <label for="accountSearch">Поиск</label>
-              <input type="text" id="accountSearch" placeholder="Название счёта" />
-            </div>
-            <div class="form-field form-field--short">
-              <label for="accountCurrencyFilter">Валюта</label>
-              <select id="accountCurrencyFilter">
-                <option value="">Все</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="PLN">PLN</option>
-                <option value="RUB">RUB</option>
-              </select>
-            </div>
-          </div>
-          <div id="accountsList" class="wallet-grid" aria-live="polite">
-            <div class="wallet-card" role="status">
-              <div class="wallet-header">
-                <div class="wallet-icon">💼</div>
-                <div class="wallet-name">Загрузка…</div>
+          <div class="panel-body">
+            <div class="filters-row">
+              <div class="form-field">
+                <label for="accountSearch">Поиск</label>
+                <input type="text" id="accountSearch" placeholder="Введите название" />
               </div>
-              <div class="wallet-balance">0.00 <span class="currency">USD</span></div>
-            </div>
-          </div>
-          <table id="accountsTable" class="visually-hidden" aria-hidden="true">
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>Валюта</th>
-                <th>Баланс</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="3">Загрузка...</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="table-controls">
-            <div>
-              <label>
-                <span>На странице:</span>
+              <div class="form-field form-field--short">
+                <label for="accountCurrencyFilter">Валюта</label>
+                <select id="accountCurrencyFilter">
+                  <option value="">Все</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PLN">PLN</option>
+                  <option value="RUB">RUB</option>
+                </select>
+              </div>
+              <div class="form-field form-field--short">
+                <label for="accountsPageSize">На странице</label>
                 <select id="accountsPageSize">
                   <option value="5">5</option>
                   <option value="10" selected>10</option>
                   <option value="20">20</option>
                 </select>
-              </label>
+              </div>
             </div>
-            <div class="table-pagination" id="accountsPagination"></div>
+            <div class="list-meta">
+              Найдено: <span id="accountsFilteredCount">0</span>
+            </div>
+            <div id="accountsList" class="wallet-grid" aria-live="polite">
+              <div class="wallet-card" role="status">
+                <div class="wallet-header">
+                  <div class="wallet-icon">💼</div>
+                  <div class="wallet-name">Загрузка…</div>
+                </div>
+                <div class="wallet-balance">0.00 <span class="currency">USD</span></div>
+              </div>
+            </div>
+            <table id="accountsTable" class="visually-hidden" aria-hidden="true">
+              <thead>
+                <tr>
+                  <th>Название</th>
+                  <th>Валюта</th>
+                  <th>Баланс</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="3">Загрузка...</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="table-controls">
+              <div class="table-pagination" id="accountsPagination"></div>
+            </div>
           </div>
         </article>
       </section>

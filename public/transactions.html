@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -145,136 +145,187 @@
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main role="main" aria-label="Управление транзакциями">
-      <!-- Форма для добавления новой операции -->
-      <section class="card" aria-labelledby="addTransactionTitle">
-        <h2 id="addTransactionTitle">Добавить операцию</h2>
-        <form id="addTransactionForm">
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="txDate">Дата</label>
-              <input type="date" id="txDate" required />
-              <span class="form-error" data-error-for="txDate"></span>
-            </div>
-            <div class="form-field">
-              <label for="txAccount">Счёт</label>
-              <select id="txAccount" required></select>
-              <span class="form-error" data-error-for="txAccount"></span>
-            </div>
-            <div class="form-field">
-              <label for="txCategory">Категория</label>
-              <select id="txCategory" required></select>
-              <span class="form-error" data-error-for="txCategory"></span>
-            </div>
-            <div class="form-field">
-              <label for="txType">Тип</label>
-              <select id="txType" required>
-                <option value="income">Доход</option>
-                <option value="expense">Расход</option>
-              </select>
-              <span class="form-error" data-error-for="txType"></span>
-            </div>
-            <div class="form-field">
-              <label for="txAmount">Сумма</label>
-              <input type="number" id="txAmount" step="0.01" min="0" required />
-              <span class="form-error" data-error-for="txAmount"></span>
-            </div>
-            <div class="form-field">
-              <label for="txCurrency">Валюта</label>
-              <select id="txCurrency" required>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="PLN">PLN</option>
-                <option value="RUB">RUB</option>
-              </select>
-              <span class="form-error" data-error-for="txCurrency"></span>
-            </div>
-            <div class="form-field" style="flex: 1 1 240px">
-              <label for="txNote">Примечание</label>
-              <input type="text" id="txNote" placeholder="Например, обед или бонус" />
+    <main class="workspace-main workspace-shell" role="main" aria-label="Управление транзакциями">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">Операции</p>
+            <h1>Журнал доходов и расходов</h1>
+            <p class="hero-description">Фиксируйте каждую операцию, применяйте фильтры и следите за чистым потоком средств.</p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="transactionsHeroRange">За всё время</span>
+              <span class="hero-pill hero-pill--soft" id="transactionsHeroCurrency">USD</span>
             </div>
           </div>
-          <button type="submit" class="btn-primary" style="margin-top: 1rem">
-            Добавить
-          </button>
-        </form>
+          <div class="hero-balance-card">
+            <p class="muted-label">Чистый поток</p>
+            <p class="hero-balance-value">
+              <span id="transactionsHeroNet">0.00</span>
+              <span id="transactionsHeroCurrencySymbol">USD</span>
+            </p>
+            <p class="hero-note" id="transactionsHeroCount">0 операций</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('txAmount').focus()">+ Добавить операцию</button>
+          <button class="btn-secondary btn-pill" onclick="location.href='accounts.html'">К счетам</button>
+        </div>
       </section>
 
-      <!-- Фильтр операций -->
-      <section class="card">
-        <h2>Фильтр операций</h2>
-        <form id="filterTxForm">
-          <div class="filter-grid">
-            <div class="form-field">
-              <label for="filterStart">От</label>
-              <input type="date" id="filterStart" />
-            </div>
-            <div class="form-field">
-              <label for="filterEnd">До</label>
-              <input type="date" id="filterEnd" />
-            </div>
-            <div class="form-field">
-              <label for="filterCategory">Категория</label>
-              <select id="filterCategory">
-                <option value="">Все</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="filterType">Тип</label>
-              <select id="filterType">
-                <option value="">Все</option>
-                <option value="income">Доход</option>
-                <option value="expense">Расход</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label for="filterSearch">Поиск</label>
-              <input
-                type="text"
-                id="filterSearch"
-                placeholder="Название, примечание или сумма"
-              />
-            </div>
-            <div class="form-field" style="align-self: end; flex: 0 0 auto">
-              <button type="submit" class="btn-primary">Применить</button>
-            </div>
-          </div>
-        </form>
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">Фильтровано операций</p>
+          <p class="metric-value"><strong id="transactionsMetricCount">0</strong></p>
+          <p class="metric-subtitle">Из всех загруженных</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Доходы</p>
+          <p class="metric-value">
+            <strong id="transactionsMetricIncome">0.00</strong>
+            <span class="currency-code" id="transactionsMetricIncomeCurrency">USD</span>
+          </p>
+          <p class="metric-subtitle">Сумма выбранного диапазона</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Расходы</p>
+          <p class="metric-value">
+            <strong id="transactionsMetricExpense">0.00</strong>
+            <span class="currency-code" id="transactionsMetricExpenseCurrency">USD</span>
+          </p>
+          <p class="metric-subtitle">Сумма выбранного диапазона</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-label">Средний чек</p>
+          <p class="metric-value">
+            <strong id="transactionsMetricAverage">0.00</strong>
+            <span class="currency-code" id="transactionsMetricAverageCurrency">USD</span>
+          </p>
+          <p class="metric-subtitle">По отфильтрованным операциям</p>
+        </article>
       </section>
-      <!-- Список операций (карточки) -->
-      <section class="card">
-        <h2>Список операций</h2>
-        <div class="filter-grid" style="margin-bottom: 1rem">
-          <div class="form-field" style="flex:0 0 200px">
-            <label>Быстрый период</label>
-            <div style="display:flex; gap:8px; flex-wrap:wrap">
-              <button type="button" class="btn-secondary" data-quick-period="today">Today</button>
-              <button type="button" class="btn-secondary" data-quick-period="week">Week</button>
-              <button type="button" class="btn-secondary" data-quick-period="month">Month</button>
+
+      <section class="workspace-grid transactions-grid">
+        <article class="panel" aria-labelledby="addTransactionTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">Новая операция</p>
+              <h2 id="addTransactionTitle">Добавить операцию</h2>
             </div>
           </div>
-        </div>
-        <div id="transactionsList" class="tx-list" aria-live="polite">
-          <div class="tx-item" role="status">
-            <div class="tx-main">
-              <span class="tx-title">Загрузка...</span>
-              <span class="tx-meta">Пожалуйста, подождите</span>
+          <form id="addTransactionForm" class="panel-body">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="txDate">Дата</label>
+                <input type="date" id="txDate" required />
+                <span class="form-error" data-error-for="txDate"></span>
+              </div>
+              <div class="form-field">
+                <label for="txAccount">Счёт</label>
+                <select id="txAccount" required></select>
+                <span class="form-error" data-error-for="txAccount"></span>
+              </div>
+              <div class="form-field">
+                <label for="txCategory">Категория</label>
+                <select id="txCategory" required></select>
+                <span class="form-error" data-error-for="txCategory"></span>
+              </div>
+              <div class="form-field">
+                <label for="txType">Тип</label>
+                <select id="txType" required>
+                  <option value="income">Доход</option>
+                  <option value="expense">Расход</option>
+                </select>
+                <span class="form-error" data-error-for="txType"></span>
+              </div>
+              <div class="form-field">
+                <label for="txAmount">Сумма</label>
+                <input type="number" id="txAmount" step="0.01" min="0" required />
+                <span class="form-error" data-error-for="txAmount"></span>
+              </div>
+              <div class="form-field">
+                <label for="txCurrency">Валюта</label>
+                <select id="txCurrency" required>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PLN">PLN</option>
+                  <option value="RUB">RUB</option>
+                </select>
+                <span class="form-error" data-error-for="txCurrency"></span>
+              </div>
+              <div class="form-field form-field--full">
+                <label for="txNote">Комментарий</label>
+                <textarea id="txNote" rows="2" placeholder="Необязательно"></textarea>
+                <span class="form-error" data-error-for="txNote"></span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel" aria-labelledby="transactionsListTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">История</p>
+              <h2 id="transactionsListTitle">Последние операции</h2>
+            </div>
+            <button class="btn-ghost" onclick="location.href='reports.html'">Перейти к отчётам</button>
+          </div>
+          <div class="panel-body">
+            <div class="filters-row">
+              <div class="form-field">
+                <label for="filterStart">С даты</label>
+                <input type="date" id="filterStart" />
+              </div>
+              <div class="form-field">
+                <label for="filterEnd">По дату</label>
+                <input type="date" id="filterEnd" />
+              </div>
+              <div class="form-field">
+                <label for="filterCategory">Категория</label>
+                <select id="filterCategory">
+                  <option value="">Все</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="filterType">Тип</label>
+                <select id="filterType">
+                  <option value="">Любой</option>
+                  <option value="income">Доход</option>
+                  <option value="expense">Расход</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="filterSearch">Поиск</label>
+                <input type="text" id="filterSearch" placeholder="Название, сумма, комментарий" />
+              </div>
+            </div>
+            <div class="list-meta">
+              Отфильтровано: <span id="transactionsFilteredCount">0</span>
+            </div>
+            <div id="transactionsList" class="tx-list" aria-live="polite"></div>
+            <table id="transactionsTable" class="visually-hidden" aria-hidden="true">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Счёт</th>
+                  <th>Категория</th>
+                  <th>Тип</th>
+                  <th>Сумма</th>
+                  <th>Комментарий</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="7">Загрузка...</td></tr>
+              </tbody>
+            </table>
+            <div class="table-controls">
+              <div class="table-pagination" id="transactionsPagination"></div>
             </div>
           </div>
-        </div>
-        <div class="table-controls" style="margin-top: 12px; display:flex; justify-content: space-between; align-items:center; gap: 12px;">
-          <div>
-            <label style="display: flex; align-items: center; gap: 0.5rem">
-              <span>На странице:</span>
-              <select id="transactionsPageSize">
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
-                <option value="20">20</option>
-              </select>
-            </label>
-          </div>
-          <div class="table-pagination" id="transactionsPagination"></div>
-        </div>
+        </article>
       </section>
     </main>
     <footer>

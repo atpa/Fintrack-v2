@@ -3,218 +3,275 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinTrackr – Бюджеты</title>
+    <title>FinTrackr - ����</title>
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
-  <script defer src="js/utils/auth.js"></script>
-  <script defer src="js/app.js"></script>
+    <link rel="stylesheet" href="css/responsive-tables.css" />
+    <script defer src="js/utils/auth.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="js/utils/ui.js"></script>
     <script defer src="js/budgets.js"></script>
   </head>
-  <body class="workspace-page" data-page-title="Бюджеты" data-page-subtitle="Контролируйте траты по категориям и периодам">
+  <body
+    class="workspace-page"
+    data-page-title="����"
+    data-page-subtitle="�������� ��⮢ �� ��⥣��� � ��ਮ���"
+  >
     <header>
       <div class="brand visually-hidden">
         <a href="dashboard.html">FinTrackr</a>
       </div>
-      <button class="burger" aria-label="Меню">
+      <button class="burger" aria-label="����">
         <span></span><span></span><span></span>
       </button>
     </header>
 
-    <aside
-      class="sidebar"
-      id="sidebar"
-      role="navigation"
-      aria-label="Боковая навигация"
-    >
-    <!-- sidebar-top removed: sidebar starts at header edge -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="������� ��������">
+      <!-- sidebar-top removed: sidebar starts at header edge -->
 
-    <div class="sidebar-scroll">
-      <nav class="sidebar-nav" aria-label="Меню приложения">
-        <div class="nav-section">
-          <h3 class="nav-section-title">Основное</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="dashboard.html" class="nav-link"
-                ><span class="nav-icon">🏠</span
-                ><span class="nav-label">Дэшборд</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="accounts.html" class="nav-link"
-                ><span class="nav-icon">💼</span
-                ><span class="nav-label">Счёта</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="transactions.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Операции</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="categories.html" class="nav-link"
-                ><span class="nav-icon">🔖</span
-                ><span class="nav-label">Категории</span></a
-              >
-            </li>
-          </ul>
-        </div>
+      <div class="sidebar-scroll">
+        <nav class="sidebar-nav" aria-label="���� �ਫ������">
+          <div class="nav-section">
+            <h3 class="nav-section-title">�᭮����</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="dashboard.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">��衮�</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="accounts.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="transactions.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����樨</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="categories.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">��⥣�ਨ</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Планирование</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="budgets.html" class="nav-link"
-                ><span class="nav-icon">📊</span
-                ><span class="nav-label">Бюджеты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="goals.html" class="nav-link"
-                ><span class="nav-icon">🎯</span
-                ><span class="nav-label">Цели</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="planned.html" class="nav-link"
-                ><span class="nav-icon">📅</span
-                ><span class="nav-label">Планируемые</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="recurring.html" class="nav-link"
-                ><span class="nav-icon">🔁</span
-                ><span class="nav-label">Регулярные</span></a
-              >
-            </li>
-          </ul>
-        </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����஢����</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="budgets.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="goals.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="planned.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">������㥬�</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="recurring.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�������</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Аналитика</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="reports.html" class="nav-link"
-                ><span class="nav-icon">📈</span
-                ><span class="nav-label">Отчёты</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="forecast.html" class="nav-link"
-                ><span class="nav-icon">🔮</span
-                ><span class="nav-label">Прогнозы</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="rules.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Правила</span></a
-              >
-            </li>
-          </ul>
-        </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�����⨪�</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="reports.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">������</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="forecast.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�ண����</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="rules.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">�ࠢ���</span></a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div class="nav-section">
-          <h3 class="nav-section-title">Дополнительно</h3>
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="education.html" class="nav-link"
-                ><span class="nav-icon">📚</span
-                ><span class="nav-label">Обучение</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="premium.html" class="nav-link"
-                ><span class="nav-icon">⭐</span
-                ><span class="nav-label">Премиум</span></a
-              >
-            </li>
-            <li class="nav-item">
-              <a href="settings.html" class="nav-link"
-                ><span class="nav-icon">⚙️</span
-                ><span class="nav-label">Настройки</span></a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+          <div class="nav-section">
+            <h3 class="nav-section-title">�������⥫쭮</h3>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="education.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">���祭��</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="premium.html" class="nav-link"
+                  ><span class="nav-icon">?</span><span class="nav-label">�६��</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="settings.html" class="nav-link"
+                  ><span class="nav-icon">??</span><span class="nav-label">����ன��</span></a
+                >
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
     </aside>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-    <main>
-      <!-- Форма для установки лимита бюджета -->
-      <section class="card">
-        <h2>Установить/обновить лимит бюджета</h2>
-        <form id="addBudgetForm">
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem">
-            <label style="flex: 1 1 200px">
-              Категория
-              <select id="budgetCategory" required></select>
-            </label>
-            <label style="flex: 1 1 150px" id="limitContainer">
-              Месяц
-              <input type="month" id="budgetMonth" required />
-            </label>
-            <label style="flex: 1 1 150px">
-              Тип лимита
-              <select id="budgetType">
-                <option value="fixed">Фиксированный</option>
-                <option value="percent">Процент от дохода</option>
-              </select>
-            </label>
-            <label style="flex: 1 1 150px">
-              Лимит
-              <input type="number" id="budgetLimit" step="0.01" />
-            </label>
-            <label style="flex: 1 1 150px">
-              Валюта бюджета
-              <select id="budgetCurrency">
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="PLN">PLN</option>
-                <option value="RUB">RUB</option>
-              </select>
-            </label>
-            <label style="flex: 1 1 150px; display: none" id="percentContainer">
-              Процент (%)
-              <input
-                type="number"
-                id="budgetPercent"
-                step="0.1"
-                min="0"
-                max="100"
-              />
-            </label>
+
+    <main class="workspace-main workspace-shell" role="main" aria-label="�����஢���� ��⮢">
+      <section class="workspace-hero">
+        <div class="hero-main">
+          <div>
+            <p class="hero-eyebrow">����</p>
+            <h1>�����ன� ��⥣��� � ����� �����</h1>
+            <p class="hero-description">
+              ��������� �����, ��������� перерасход � ����������� прогресс по категориям.
+              ������� ������ �� ��੬��� ��� ��⥣�ਨ ਅਤੇ месяцы.
+            </p>
+            <div class="hero-tags">
+              <span class="hero-pill" id="budgetsHeroPeriodTag">0 ������</span>
+              <span class="hero-pill hero-pill--soft" id="budgetsHeroPercentTag">0% ��業�</span>
+            </div>
           </div>
-          <button type="submit" class="btn-primary" style="margin-top: 1rem">
-            Сохранить
-          </button>
-        </form>
+          <div class="hero-balance-card">
+            <p class="muted-label">����஢���� ���⥫���</p>
+            <p class="hero-balance-value">
+              <span id="budgetsHeroAllocated">0.00</span>
+              <span id="budgetsHeroCurrency">USD</span>
+            </p>
+            <p class="hero-note" id="budgetsHeroNote">������� ����� �� ����⢥� ⭠.</p>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary btn-pill" onclick="document.getElementById('budgetCategory').focus()">+ �������� ���</button>
+          <button class="btn-secondary btn-pill" onclick="location.href='categories.html'">�������� ��⥣���</button>
+        </div>
       </section>
-      <!-- Таблица бюджетов -->
-      <section class="card">
-        <h2>Бюджеты на месяц</h2>
-        <table id="budgetsTable">
-          <thead>
-            <tr>
-              <th>Категория</th>
-              <th>Месяц</th>
-              <th>Лимит</th>
-              <th>Потрачено</th>
-              <th>Прогресс</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="5">Загрузка...</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <section class="metrics-grid">
+        <article class="metric-card">
+          <p class="metric-label">��������� ������</p>
+          <p class="metric-value"><strong id="budgetsMetricCount">0</strong></p>
+          <p class="metric-subtitle">�퓮� ��੬���� ���</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">�������� �����</p>
+          <p class="metric-value"><strong id="budgetsMetricOverspent">0</strong></p>
+          <p class="metric-subtitle">���� �� ����⢥� ��������</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">�।��� загрузка</p>
+          <p class="metric-value">
+            <strong id="budgetsMetricUtilization">0%</strong>
+          </p>
+          <p class="metric-subtitle">����室/����஢����</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">��业�-������</p>
+          <p class="metric-value"><strong id="budgetsMetricPercentShare">0%</strong></p>
+          <p class="metric-subtitle">��業���� от ��室��</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid workspace-grid--stretch">
+        <article class="panel" aria-labelledby="addBudgetTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">���� ��⥣���</p>
+              <h2 id="addBudgetTitle">�������� ���</h2>
+            </div>
+          </div>
+          <form id="addBudgetForm" class="panel-body">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="budgetCategory">��⥣���</label>
+                <select id="budgetCategory" required></select>
+              </div>
+              <div class="form-field form-field--short" id="limitContainer">
+                <label for="budgetMonth">�����</label>
+                <input type="month" id="budgetMonth" required />
+              </div>
+              <div class="form-field form-field--short">
+                <label for="budgetType">��� �����</label>
+                <select id="budgetType">
+                  <option value="fixed">����஢����</option>
+                  <option value="percent">��業� �� ��室�</option>
+                </select>
+              </div>
+              <div class="form-field form-field--short">
+                <label for="budgetLimit">�����</label>
+                <input type="number" id="budgetLimit" step="0.01" min="0" />
+              </div>
+              <div class="form-field form-field--short">
+                <label for="budgetCurrency">�����</label>
+                <select id="budgetCurrency">
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PLN">PLN</option>
+                  <option value="RUB">RUB</option>
+                </select>
+              </div>
+              <div class="form-field form-field--short" id="percentContainer" style="display: none">
+                <label for="budgetPercent">��業� (%)</label>
+                <input type="number" id="budgetPercent" min="0" max="100" step="0.1" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">���࠭���</button>
+              <p class="form-hint">��業���� ����� ��������� �� ��室 �� ����䨪���.</p>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel panel--stretch" aria-labelledby="budgetsListTitle">
+          <div class="panel-header">
+            <div>
+              <p class="muted-label">�ண������</p>
+              <h2 id="budgetsListTitle">������ ��⮢</h2>
+            </div>
+            <div class="panel-actions">
+              <span class="muted-label" id="budgetsTableHint">���������: 0</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrapper responsive-table">
+              <table id="budgetsTable">
+                <thead>
+                  <tr>
+                    <th>��⥣���</th>
+                    <th>�����</th>
+                    <th>�����</th>
+                    <th>������</th>
+                    <th>�ண���</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="5">����㧪�...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-footnote">������ ����� ������������� ��������� �ண��� в зависимости от типа.</p>
+          </div>
+        </article>
       </section>
     </main>
+
     <footer>
-      <p>&copy; 2025 FinTrackr. Все права защищены.</p>
+      <p>&copy; 2025 FinTrackr. �� �ࠢ� ���饭�.</p>
     </footer>
   </body>
 </html>
